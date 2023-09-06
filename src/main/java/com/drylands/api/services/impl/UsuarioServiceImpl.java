@@ -2,11 +2,11 @@ package com.drylands.api.services.impl;
 
 import com.drylands.api.domain.JwtToken;
 import com.drylands.api.domain.Usuario;
-import com.drylands.api.enums.TokenEnum;
+import com.drylands.api.domain.enums.TokenEnum;
 import com.drylands.api.infrastructure.exceptions.BadRequestException;
 import com.drylands.api.infrastructure.exceptions.NotFoundException;
-import com.drylands.api.repositories.TokenRepository;
-import com.drylands.api.repositories.UsuarioRepository;
+import com.drylands.api.infrastructure.repositories.TokenRepository;
+import com.drylands.api.infrastructure.repositories.UsuarioRepository;
 import com.drylands.api.rest.dtos.request.CodigoConfirmacaoRequestDTO;
 import com.drylands.api.services.TokenService;
 import com.drylands.api.services.UsuarioService;

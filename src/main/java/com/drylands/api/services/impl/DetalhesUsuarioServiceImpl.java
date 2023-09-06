@@ -1,7 +1,7 @@
 package com.drylands.api.services.impl;
 
 import com.drylands.api.domain.Usuario;
-import com.drylands.api.repositories.UsuarioRepository;
+import com.drylands.api.infrastructure.repositories.UsuarioRepository;
 import com.drylands.api.services.DetalhesUsuarioService;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;

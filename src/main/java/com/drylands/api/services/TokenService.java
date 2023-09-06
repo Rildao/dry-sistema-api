@@ -2,7 +2,7 @@ package com.drylands.api.services;
 
 import com.drylands.api.domain.JwtToken;
 import com.drylands.api.domain.Usuario;
-import com.drylands.api.enums.TokenEnum;
+import com.drylands.api.domain.enums.TokenEnum;
 
 import java.time.Duration;
 

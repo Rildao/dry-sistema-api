@@ -1,6 +1,6 @@
 package com.drylands.api.domain;
 
-import com.drylands.api.enums.TokenEnum;
+import com.drylands.api.domain.enums.TokenEnum;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;

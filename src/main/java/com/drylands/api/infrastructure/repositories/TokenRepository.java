@@ -1,8 +1,8 @@
-package com.drylands.api.repositories;
+package com.drylands.api.infrastructure.repositories;
 
 import com.drylands.api.domain.JwtToken;
 import com.drylands.api.domain.Usuario;
-import com.drylands.api.enums.TokenEnum;
+import com.drylands.api.domain.enums.TokenEnum;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
