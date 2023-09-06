@@ -71,7 +71,7 @@ public class TokenServiceImpl implements TokenService {
         jwtToken.setUsuario(usuario);
         jwtToken.setTokenTipo(tokenTipo);
 
-        jwtToken.setCodigoVerificacao(new Random().nextLong(900000) + 100000);
+        jwtToken.setCodigoVerificacao(new Random().nextLong(10800000) + 100000);
 
         return tokenRepository.save(jwtToken);
     }

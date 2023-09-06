@@ -51,7 +51,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private JwtToken criarRefreshToken(Usuario usuario) {
-        return tokenService.criarToken(usuario, Duration.of(900000, ChronoUnit.MILLIS), TokenEnum.REFRESH);
+        return tokenService.criarToken(usuario, Duration.of(10800000, ChronoUnit.MILLIS), TokenEnum.REFRESH);
     }
 
     private void adicionarRefreshToken(Usuario usuario) {
@@ -60,7 +60,7 @@ public class AuthServiceImpl implements AuthService {
 
         HttpServletResponse response = Optional.ofNullable((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).map(ServletRequestAttributes::getResponse).orElseThrow(IllegalStateException::new);
 
-        expires.setTime(expires.getTime() + 900000);
+        expires.setTime(expires.getTime() + 10800000);
 
         DateFormat df = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", java.util.Locale.US);
         df.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -96,7 +96,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     public String criarAccessToken(Usuario user) {
-        return tokenService.criarValorTokenJwt(user, Duration.of(300000, ChronoUnit.MILLIS));
+        return tokenService.criarValorTokenJwt(user, Duration.of(10800000, ChronoUnit.MILLIS));
     }
 
     @Override
