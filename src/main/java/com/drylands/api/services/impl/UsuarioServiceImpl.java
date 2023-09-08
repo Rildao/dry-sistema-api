@@ -10,6 +10,7 @@ import com.drylands.api.infrastructure.repositories.UsuarioRepository;
 import com.drylands.api.rest.dtos.request.CodigoConfirmacaoRequestDTO;
 import com.drylands.api.services.TokenService;
 import com.drylands.api.services.UsuarioService;
+import com.drylands.api.utils.UtilidadesData;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +37,9 @@ public class UsuarioServiceImpl implements UsuarioService {
     public Usuario criarUsuario(Usuario usuario) {
 
         usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
+
+        UtilidadesData.configurarDatasComFusoHorarioBrasileiro(usuario);
+        usuario.setPrimeiroAcesso(Boolean.FALSE);
 
         usuarioRepository.save(usuario);
 

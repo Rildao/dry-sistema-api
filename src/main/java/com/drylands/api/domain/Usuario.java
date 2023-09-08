@@ -23,11 +23,14 @@ public class Usuario {
 
     private String senha;
 
-    private Boolean primeiro_acesso;
+    @Column(name = "primeiro_acesso")
+    private Boolean primeiroAcesso;
 
-    private Date data_criacao;
+    @Column(name = "data_criacao")
+    private Date dataCriacao;
 
-    private Date data_atualizacao;
+    @Column(name = "data_atualizacao")
+    private Date dataAtualizacao;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
     private List<JwtToken> jwtTokens;
