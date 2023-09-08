@@ -33,6 +33,7 @@ public class TokenServiceImpl implements TokenService {
         Date dataExpiracao = new Date(agora.getTime() + expiraEm.toMillis());
         return Jwts.builder()
                 .setClaims(claims)
+                .setSubject(usuario.getEmail())
                 .setIssuedAt(new Date())
                 .setExpiration(dataExpiracao)
                 .setIssuer("spring template")
