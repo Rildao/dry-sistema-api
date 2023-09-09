@@ -5,17 +5,17 @@ import com.drylands.api.infrastructure.exceptions.BadRequestException;
 import com.drylands.api.infrastructure.exceptions.NotFoundException;
 import com.drylands.api.infrastructure.repositories.ClienteRepository;
 import com.drylands.api.rest.dtos.cliente.ClienteDTO;
+import com.drylands.api.rest.dtos.cliente.ListagemClienteDTO;
 import com.drylands.api.services.ClienteService;
+import com.drylands.api.utils.UtilidadesData;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -36,20 +36,12 @@ public class ClienteServiceImpl implements ClienteService {
 
         Optional<Cliente> cliente = this.clienteRepository.findByCpf(clienteDto.getCpf());
 
-        /*
-        * TODO: Separar metódos de validação e validar campos.
-        * */
-        if(cliente.isPresent()) {
-            throw new BadRequestException("Cliente já possui cadastro!");
-        }
+        clienteValidacaoDeCampos(cliente);
 
-        Cliente novoCliente = modelMapper.map(clienteDto, Cliente.class);
+        Cliente novoCliente = modelMapper
+                .map(clienteDto, Cliente.class);
 
-        /*
-         * TODO: Após aprovação do PR de datas, utilizar aqui e deixar generico.
-         * */
-        novoCliente.setDataCriacao(null);
-        novoCliente.setDataAtualizacao(null);
+        UtilidadesData.configurarDatasComFusoHorarioBrasileiro(novoCliente);
 
         return this.clienteRepository.save(novoCliente);
     }
@@ -62,13 +54,7 @@ public class ClienteServiceImpl implements ClienteService {
 
         Cliente clienteUpdated = modelMapper.map(clienteDto, Cliente.class);
 
-        /*
-         * TODO: Após aprovação do PR de datas, jogar esse código em função generica na classe de utilidades.
-         * */
-        ZonedDateTime zdt = ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("America/Sao_Paulo"));
-        Date date = Date.from(zdt.toInstant());
-
-        clienteUpdated.setDataAtualizacao(date);
+        UtilidadesData.configurarDatasComFusoHorarioBrasileiroParaAtualizar(clienteUpdated);
 
         return this.clienteRepository.save(clienteUpdated);
     }
@@ -87,12 +73,23 @@ public class ClienteServiceImpl implements ClienteService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Cliente> listarClientes(Pageable pageable) {
+    public ListagemClienteDTO listarClientes(Pageable pageable) {
+        ListagemClienteDTO listagemClientesPage = new ListagemClienteDTO();
+        List<ClienteDTO> listaDeClientes = new ArrayList<>();
 
-        /*
-         * TODO: Trasformar lista de entidades em DTO.
-         * */
-        return this.clienteRepository.findAll(pageable);
+        Page<Cliente> page = this.clienteRepository.findAll(pageable);
+
+        page.getContent().forEach(cliente -> {
+            ClienteDTO clienteDto = modelMapper.map(cliente, ClienteDTO.class);
+            listaDeClientes.add(clienteDto);
+        });
+
+        listagemClientesPage.setClientes(listaDeClientes);
+        listagemClientesPage.setTotalElements(page.getTotalElements());
+        listagemClientesPage.setTotalPage(page.getTotalPages());
+        listagemClientesPage.setSize(page.getSize());
+
+        return listagemClientesPage;
     }
 
     @Override
@@ -101,5 +98,11 @@ public class ClienteServiceImpl implements ClienteService {
         this.pegarClientePorId(id);
 
         this.clienteRepository.deleteById(id);
+    }
+
+    private static void clienteValidacaoDeCampos(Optional<Cliente> cliente) {
+        if(cliente.isPresent()) {
+            throw new BadRequestException("Cliente já possui cadastro!");
+        }
     }
 }
