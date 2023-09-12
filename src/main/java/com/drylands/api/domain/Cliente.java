@@ -4,13 +4,11 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Date;
-
 @Entity
 @Getter
 @Setter
 @Table(name = "cliente")
-public class Cliente {
+public class Cliente extends EntidadeAbstrata {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "client_seq")
@@ -24,10 +22,4 @@ public class Cliente {
     private String telefone;
 
     private String endereco;
-
-    @Column(name = "data_criacao")
-    private Date dataCriacao;
-
-    @Column(name = "data_atualizacao")
-    private Date dataAtualizacao;
 }

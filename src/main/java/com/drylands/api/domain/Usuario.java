@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 @Table(name = "usuarios")
-public class Usuario {
+public class Usuario extends EntidadeAbstrata {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "user_seq")
@@ -25,12 +25,6 @@ public class Usuario {
 
     @Column(name = "primeiro_acesso")
     private Boolean primeiroAcesso;
-
-    @Column(name = "data_criacao")
-    private Date dataCriacao;
-
-    @Column(name = "data_atualizacao")
-    private Date dataAtualizacao;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
     private List<JwtToken> jwtTokens;
