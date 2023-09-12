@@ -2,6 +2,7 @@ package com.drylands.api.rest.resources;
 
 import com.drylands.api.domain.Cliente;
 import com.drylands.api.rest.dtos.cliente.ClienteDTO;
+import com.drylands.api.rest.dtos.cliente.ListagemClienteDTO;
 import com.drylands.api.rest.dtos.response.ApiResponseDTO;
 import com.drylands.api.services.ClienteService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -43,7 +44,7 @@ public class ClienteController extends AbstractController {
 
     @GetMapping()
     @Operation(tags = "Cliente", summary = "Listar todos os clientes paginados")
-    public ResponseEntity<Page<Cliente>> listarClientes(Pageable pageable) {
+    public ResponseEntity<ListagemClienteDTO> listarClientes(Pageable pageable) {
         return new ResponseEntity<>(this.clienteService.listarClientes(pageable), HttpStatus.OK);
     }
 

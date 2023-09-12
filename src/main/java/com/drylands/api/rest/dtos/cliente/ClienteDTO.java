@@ -1,5 +1,6 @@
 package com.drylands.api.rest.dtos.cliente;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,6 +11,7 @@ import java.util.Date;
 public class ClienteDTO {
     private String id;
 
+    @NotBlank(message = "Nome do cliente não pode ser vazio!")
     private String nome;
 
     private String cpf;

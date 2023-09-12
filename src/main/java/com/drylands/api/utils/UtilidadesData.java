@@ -1,5 +1,6 @@
 package com.drylands.api.utils;
 
+import com.drylands.api.domain.Cliente;
 import com.drylands.api.domain.Usuario;
 
 import java.time.LocalDateTime;
@@ -14,5 +15,20 @@ public class UtilidadesData {
 
         usuario.setDataCriacao(date);
         usuario.setDataAtualizacao(date);
+    }
+
+    public static void configurarDatasComFusoHorarioBrasileiro(Cliente entity) {
+        ZonedDateTime zdt = ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("America/Sao_Paulo"));
+        Date date = Date.from(zdt.toInstant());
+
+        entity.setDataCriacao(date);
+        entity.setDataAtualizacao(date);
+    }
+
+    public static void configurarDatasComFusoHorarioBrasileiroParaAtualizar(Cliente entity) {
+        ZonedDateTime zdt = ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("America/Sao_Paulo"));
+        Date date = Date.from(zdt.toInstant());
+
+        entity.setDataAtualizacao(date);
     }
 }
