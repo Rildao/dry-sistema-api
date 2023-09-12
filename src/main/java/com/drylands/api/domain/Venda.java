@@ -12,7 +12,7 @@ import java.util.Date;
 @Getter
 @Setter
 @Table(name = "venda")
-public class Venda {
+public class Venda extends EntidadeAbstrata {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "user_seq")
@@ -37,10 +37,4 @@ public class Venda {
 
     @Column(name = "data_venda")
     private Date dataVenda;
-
-    @Column(name = "data_criacao")
-    private Date dataCriacao;
-
-    @Column(name = "data_atualizacao")
-    private Date dataAtualizacao;
 }
