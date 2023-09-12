@@ -2,6 +2,7 @@ package com.drylands.api.utils;
 
 import com.drylands.api.domain.Cliente;
 import com.drylands.api.domain.Usuario;
+import com.drylands.api.domain.Venda;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -25,7 +26,22 @@ public class UtilidadesData {
         entity.setDataAtualizacao(date);
     }
 
+    public static void configurarDatasComFusoHorarioBrasileiro(Venda entity) {
+        ZonedDateTime zdt = ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("America/Sao_Paulo"));
+        Date date = Date.from(zdt.toInstant());
+
+        entity.setDataCriacao(date);
+        entity.setDataAtualizacao(date);
+    }
+
     public static void configurarDatasComFusoHorarioBrasileiroParaAtualizar(Cliente entity) {
+        ZonedDateTime zdt = ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("America/Sao_Paulo"));
+        Date date = Date.from(zdt.toInstant());
+
+        entity.setDataAtualizacao(date);
+    }
+
+    public static void configurarDatasComFusoHorarioBrasileiroParaAtualizar(Venda entity) {
         ZonedDateTime zdt = ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("America/Sao_Paulo"));
         Date date = Date.from(zdt.toInstant());
 
