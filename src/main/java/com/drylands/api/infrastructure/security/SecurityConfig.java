@@ -60,7 +60,6 @@ public class SecurityConfig {
                                 requests
                                         .requestMatchers(HttpMethod.OPTIONS).permitAll()
                                         .requestMatchers( "/**").permitAll()
-//                                        .requestMatchers("/api/**").authenticated()
                                         .anyRequest().permitAll()
                                         .and().cors().and()
                                         .exceptionHandling()
