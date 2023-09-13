@@ -59,7 +59,8 @@ public class SecurityConfig {
                             try {
                                 requests
                                         .requestMatchers(HttpMethod.OPTIONS).permitAll()
-                                        .requestMatchers("/api/**").authenticated()
+                                        .requestMatchers( "/**").permitAll()
+//                                        .requestMatchers("/api/**").authenticated()
                                         .anyRequest().permitAll()
                                         .and().cors().and()
                                         .exceptionHandling()
