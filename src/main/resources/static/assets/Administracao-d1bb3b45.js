@@ -1,1 +1,0 @@
-import{_ as r,q as e,h as c,j as s,t as o,F as a}from"./index-eb56b3a1.js";const _={};function m(u,i){const t=e("Construcao"),n=e("router-view");return c(),s(a,null,[o(t),o(n)],64)}const p=r(_,[["render",m]]);export{p as default};
