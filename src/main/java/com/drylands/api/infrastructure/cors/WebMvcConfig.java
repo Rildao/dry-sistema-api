@@ -9,12 +9,20 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebMvcConfig implements WebMvcConfigurer {
 
     @Value("${url.web}")
-    private String origin;
+    private String originWeb;
+
+    @Value("${url.api}")
+    private String originApi;
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins(origin)
+                .allowedOrigins(
+                        "http://" + originWeb,
+                        "https://" + originWeb,
+                        "http://" + originApi,
+                        "https://" + originApi
+                )
                 .allowedMethods("*")
                 .allowedHeaders("*");
     }
