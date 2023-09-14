@@ -11,7 +11,7 @@ import java.util.Date;
 @Getter
 @Setter
 @Table(name = "lancamento_crediario")
-public class LancamentoCrediario extends EntidadeAbstrata {
+public class LancamentoCrediario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "lc_seq")

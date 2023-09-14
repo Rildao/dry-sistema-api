@@ -1,10 +1,14 @@
 package com.drylands.api.services.impl;
 
+import com.drylands.api.domain.LancamentoCrediario;
 import com.drylands.api.domain.Venda;
+import com.drylands.api.domain.enums.EStatusVenda;
+import com.drylands.api.domain.enums.ETipoVenda;
 import com.drylands.api.infrastructure.exceptions.NotFoundException;
 import com.drylands.api.infrastructure.repositories.VendaRepository;
 import com.drylands.api.rest.dtos.venda.ListagemVendaDTO;
 import com.drylands.api.rest.dtos.venda.VendaDTO;
+import com.drylands.api.services.LancamentoCrediarioService;
 import com.drylands.api.services.VendaService;
 import com.drylands.api.utils.UtilidadesData;
 import org.modelmapper.ModelMapper;
@@ -13,19 +17,24 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.*;
 
 @Service
 public class VendaServiceImpl implements VendaService {
 
     VendaRepository vendaRepository;
+    
+    LancamentoCrediarioService lancamentoCrediarioService;
 
     private ModelMapper modelMapper;
 
-    public VendaServiceImpl(VendaRepository vendaRepository, ModelMapper modelMapper) {
+    public VendaServiceImpl(VendaRepository vendaRepository, 
+                            LancamentoCrediarioService lancamentoCrediarioService,
+                            ModelMapper modelMapper) {
+        this.lancamentoCrediarioService = lancamentoCrediarioService;
         this.vendaRepository = vendaRepository;
         this.modelMapper = modelMapper;
     }
@@ -35,10 +44,14 @@ public class VendaServiceImpl implements VendaService {
     public Venda criarVenda(VendaDTO vendaDto) {
 
         Venda novaVenda = modelMapper.map(vendaDto, Venda.class);
+        
+        novaVenda = this.vendaRepository.save(novaVenda);
+
+        this.gerandoLancamentosParaCrediario(vendaDto, novaVenda);
 
         UtilidadesData.configurarDatasComFusoHorarioBrasileiro(novaVenda);
 
-        return this.vendaRepository.save(novaVenda);
+        return novaVenda;
     }
 
     @Override
@@ -126,5 +139,29 @@ public class VendaServiceImpl implements VendaService {
         this.pegarVendaPorId(id);
 
         this.vendaRepository.deleteById(id);
+    }
+
+    private void gerandoLancamentosParaCrediario(VendaDTO vendaDto, Venda venda) {
+        if (vendaDto.getTipoVenda().equals(ETipoVenda.CREDIARIO)) {
+            float valorParcela = vendaDto.getValorVenda()/ vendaDto.getQuantidadeParcelas();
+
+            for(float qtdLancamentos = 0; qtdLancamentos <= vendaDto.getQuantidadeParcelas(); qtdLancamentos++) {
+                LancamentoCrediario lancamentoCrediario = new LancamentoCrediario();
+
+                lancamentoCrediario.setVenda(venda);
+                lancamentoCrediario.setValorParcela(valorParcela);
+
+                /*
+                *   TODO - Definir como será a data de vencimento da parcela do crédiario e lançar parcelas
+                *    para o próximo mês da última gerada.
+                */
+                ZonedDateTime zdt = ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("America/Sao_Paulo"));
+                Date date = Date.from(zdt.toInstant());
+                lancamentoCrediario.setDataPagamento(date);
+                lancamentoCrediario.setStatusVenda(EStatusVenda.ANDAMENTO);
+
+                this.lancamentoCrediarioService.criarLancamentoCrediario(lancamentoCrediario);
+            }
+        }
     }
 }
