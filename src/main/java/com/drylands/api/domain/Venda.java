@@ -15,8 +15,8 @@ import java.util.Date;
 public class Venda extends EntidadeAbstrata {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "user_seq")
-    @SequenceGenerator(name = "user_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "venda_seq")
+    @SequenceGenerator(name = "venda_seq", allocationSize = 1)
     private Long id;
 
     @ManyToOne
