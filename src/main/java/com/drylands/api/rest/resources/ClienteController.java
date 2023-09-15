@@ -1,13 +1,11 @@
 package com.drylands.api.rest.resources;
 
-import com.drylands.api.domain.Cliente;
 import com.drylands.api.rest.dtos.cliente.ClienteDTO;
 import com.drylands.api.rest.dtos.cliente.ListagemClienteDTO;
 import com.drylands.api.rest.dtos.response.ApiResponseDTO;
 import com.drylands.api.services.ClienteService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,8 +42,9 @@ public class ClienteController extends AbstractController {
 
     @GetMapping()
     @Operation(tags = "Cliente", summary = "Listar todos os clientes paginados")
-    public ResponseEntity<ListagemClienteDTO> listarClientes(Pageable pageable) {
-        return new ResponseEntity<>(this.clienteService.listarClientes(pageable), HttpStatus.OK);
+    public ResponseEntity<ListagemClienteDTO> listarClientes(Pageable pageable,
+                                                             @RequestParam(value = "filter", required = false) String filter) {
+        return new ResponseEntity<>(this.clienteService.listarClientes(pageable, filter), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

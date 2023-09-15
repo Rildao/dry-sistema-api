@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -73,11 +74,20 @@ public class ClienteServiceImpl implements ClienteService {
 
     @Override
     @Transactional(readOnly = true)
-    public ListagemClienteDTO listarClientes(Pageable pageable) {
+    public ListagemClienteDTO listarClientes(Pageable pageable, String filter) {
         ListagemClienteDTO listagemClientesPage = new ListagemClienteDTO();
         List<ClienteDTO> listaDeClientes = new ArrayList<>();
 
-        Page<Cliente> page = this.clienteRepository.findAll(pageable);
+        Page<Cliente> page;
+
+        /*
+        * TODO: implementar critéria builder
+        * */
+        if (Objects.nonNull(filter)) {
+            page = this.clienteRepository.findAllByFilters(pageable, filter);
+        } else {
+            page = this.clienteRepository.findAll(pageable);
+        }
 
         page.getContent().forEach(cliente -> {
             ClienteDTO clienteDto = modelMapper.map(cliente, ClienteDTO.class);

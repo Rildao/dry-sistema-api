@@ -23,7 +23,7 @@ public class Venda extends EntidadeAbstrata {
     @JoinColumn(name="cliente_id", nullable = false)
     private Cliente cliente;
 
-    @Column(name = "tipo_venda")
+    @Column(name = "tipo_venda", nullable = false)
     private ETipoVenda tipoVenda;
 
     @Column(name = "quantidade_parcelas")
@@ -32,9 +32,12 @@ public class Venda extends EntidadeAbstrata {
     @Column(name = "valor_venda")
     private float valorVenda;
 
-    @Column(name = "status_venda")
+    @Column(name = "status_venda", nullable = false)
     private EStatusVenda statusVenda;
 
-    @Column(name = "data_venda")
+    @Column(name = "data_venda", nullable = false)
     private Date dataVenda;
+
+    @Column(name = "data_vencimento_lancamento")
+    private Date dataVencimentoLancamento;
 }

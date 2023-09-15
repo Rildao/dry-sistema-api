@@ -30,4 +30,6 @@ public class VendaDTO {
     private Date dataCriacao;
 
     private Date dataAtualizacao;
+
+    private Date dataVencimentoLancamento;
 }

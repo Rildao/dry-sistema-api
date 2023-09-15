@@ -17,9 +17,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.*;
 
 @Service
@@ -47,7 +44,7 @@ public class VendaServiceImpl implements VendaService {
         
         novaVenda = this.vendaRepository.save(novaVenda);
 
-        this.gerandoLancamentosParaCrediario(vendaDto, novaVenda);
+        // this.gerandoLancamentosParaCrediario(novaVenda);
 
         UtilidadesData.configurarDatasComFusoHorarioBrasileiro(novaVenda);
 
@@ -141,26 +138,33 @@ public class VendaServiceImpl implements VendaService {
         this.vendaRepository.deleteById(id);
     }
 
-    private void gerandoLancamentosParaCrediario(VendaDTO vendaDto, Venda venda) {
-        if (vendaDto.getTipoVenda().equals(ETipoVenda.CREDIARIO)) {
-            float valorParcela = vendaDto.getValorVenda()/ vendaDto.getQuantidadeParcelas();
+    private void gerandoLancamentosParaCrediario(Venda venda) {
+        if (venda.getTipoVenda().equals(ETipoVenda.CREDIARIO)) {
+            float valorParcela = venda.getValorVenda()/ venda.getQuantidadeParcelas();
 
-            for(float qtdLancamentos = 0; qtdLancamentos <= vendaDto.getQuantidadeParcelas(); qtdLancamentos++) {
+            Date dataBaseParaLancamentos;
+
+            if(Objects.nonNull(venda.getDataVencimentoLancamento())) {
+                dataBaseParaLancamentos = venda.getDataVencimentoLancamento();
+            } else {
+                dataBaseParaLancamentos = venda.getDataVenda();
+            }
+
+             // Calendar calendar = Calendar.getInstance();
+             // calendar.setTime(dataBaseParaLancamentos);
+             // calendar.add(Calendar.MONTH, 1);
+
+            for(float qtdLancamentos = 0; qtdLancamentos <= venda.getQuantidadeParcelas(); qtdLancamentos++) {
                 LancamentoCrediario lancamentoCrediario = new LancamentoCrediario();
 
                 lancamentoCrediario.setVenda(venda);
                 lancamentoCrediario.setValorParcela(valorParcela);
-
-                /*
-                *   TODO - Definir como será a data de vencimento da parcela do crédiario e lançar parcelas
-                *    para o próximo mês da última gerada.
-                */
-                ZonedDateTime zdt = ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("America/Sao_Paulo"));
-                Date date = Date.from(zdt.toInstant());
-                lancamentoCrediario.setDataPagamento(date);
+                lancamentoCrediario.setDataPagamento(dataBaseParaLancamentos);
                 lancamentoCrediario.setStatusVenda(EStatusVenda.ANDAMENTO);
 
                 this.lancamentoCrediarioService.criarLancamentoCrediario(lancamentoCrediario);
+
+                // calendar.add(Calendar.MONTH, 1);
             }
         }
     }

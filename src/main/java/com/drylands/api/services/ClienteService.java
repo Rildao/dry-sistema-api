@@ -9,6 +9,6 @@ public interface ClienteService {
     public Cliente criarCliente (ClienteDTO cliente);
     public Cliente atualizarCliente (Long id, ClienteDTO cliente);
     public Cliente pegarClientePorId (Long id);
-    public ListagemClienteDTO listarClientes (Pageable pageable);
+    public ListagemClienteDTO listarClientes (Pageable pageable, String filter);
     public void deletarCliente(Long id);
 }
