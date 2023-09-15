@@ -1,6 +1,7 @@
 package com.drylands.api.rest.resources;
 
 import com.drylands.api.rest.dtos.cliente.ClienteDTO;
+import com.drylands.api.rest.dtos.cliente.ClienteVendasDTO;
 import com.drylands.api.rest.dtos.cliente.ListagemClienteDTO;
 import com.drylands.api.rest.dtos.response.ApiResponseDTO;
 import com.drylands.api.services.ClienteService;
@@ -36,8 +37,8 @@ public class ClienteController extends AbstractController {
 
     @GetMapping("/{id}")
     @Operation(tags = "Cliente", summary = "Pegar cliente por id")
-    public ResponseEntity<ClienteDTO> pegarClientePorId(@RequestParam("id") Long id) {
-        return new ResponseEntity<>(mapearDTO(this.clienteService.pegarClientePorId(id), ClienteDTO.class), HttpStatus.OK);
+    public ResponseEntity<ClienteVendasDTO> pegarClientePorId(@RequestParam("id") Long id) {
+        return new ResponseEntity<>(this.clienteService.pegarClientePorId(id), HttpStatus.OK);
     }
 
     @GetMapping()
