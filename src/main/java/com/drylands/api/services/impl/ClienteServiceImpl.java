@@ -12,6 +12,7 @@ import com.drylands.api.rest.dtos.cliente.ListagemClienteDTO;
 import com.drylands.api.rest.dtos.venda.VendaSimplificadoDTO;
 import com.drylands.api.services.ClienteService;
 import com.drylands.api.utils.UtilidadesData;
+import com.drylands.api.utils.UtilidadesDocumentos;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -46,6 +47,8 @@ public class ClienteServiceImpl implements ClienteService {
         Optional<Cliente> cliente = this.clienteRepository.findByCpf(clienteDto.getCpf());
 
         clienteValidacaoDeCampos(cliente);
+
+        UtilidadesDocumentos.validarCpf(clienteDto.getCpf());
 
         Cliente novoCliente = modelMapper
                 .map(clienteDto, Cliente.class);
