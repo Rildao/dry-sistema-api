@@ -1,7 +1,6 @@
 package com.drylands.api.utils;
 
 import com.drylands.api.domain.Cliente;
-import com.drylands.api.domain.LancamentoCrediario;
 import com.drylands.api.domain.Usuario;
 import com.drylands.api.domain.Venda;
 
