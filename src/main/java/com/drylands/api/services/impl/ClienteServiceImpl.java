@@ -60,6 +60,31 @@ public class ClienteServiceImpl implements ClienteService {
 
     @Override
     @Transactional
+    public Cliente criarClienteComVendas(ClienteVendasDTO clienteVendasDto) {
+
+        Optional<Cliente> cliente = this.clienteRepository.findByCpf(clienteVendasDto.getCpf());
+
+        clienteValidacaoDeCampos(cliente);
+
+        UtilidadesDocumentos.validarCpf(clienteVendasDto.getCpf());
+
+        Cliente novoCliente = new Cliente();
+
+        novoCliente.setNome(clienteVendasDto.getNome());
+        novoCliente.setCpf(clienteVendasDto.getCpf());
+        novoCliente.setEndereco(clienteVendasDto.getEndereco());
+        novoCliente.setTelefone(clienteVendasDto.getTelefone());
+        UtilidadesData.configurarDatasComFusoHorarioBrasileiro(novoCliente);
+
+        novoCliente = this.clienteRepository.save(novoCliente);
+
+        relacionarClienteVenda(clienteVendasDto, novoCliente);
+
+        return novoCliente;
+    }
+
+    @Override
+    @Transactional
     public Cliente atualizarCliente(Long id, ClienteDTO clienteDto) {
 
         this.pegarClientePorId(id);
@@ -80,7 +105,7 @@ public class ClienteServiceImpl implements ClienteService {
             throw new NotFoundException("Cliente não encontrado.");
         }
 
-        ClienteVendasDTO clienteVendasDto = criandoClienteComVendas(id, cliente.get());
+        ClienteVendasDTO clienteVendasDto = montandoClienteComVendas(id, cliente.get());
 
         return clienteVendasDto;
     }
@@ -129,7 +154,7 @@ public class ClienteServiceImpl implements ClienteService {
         }
     }
 
-    private ClienteVendasDTO criandoClienteComVendas(Long id, Cliente cliente) {
+    private ClienteVendasDTO montandoClienteComVendas(Long id, Cliente cliente) {
         List<Venda> vendas = this.vendaRepository.findAllByClienteIdAndDataCriacaoOrderByDesc(id);
 
         ClienteVendasDTO clienteVendasDto = new ClienteVendasDTO();
@@ -153,5 +178,21 @@ public class ClienteServiceImpl implements ClienteService {
         }
 
         return clienteVendasDto;
+    }
+
+    private void relacionarClienteVenda(ClienteVendasDTO clienteVendasDto, Cliente cliente) {
+        List<Venda> vendas = new ArrayList<>();
+
+        clienteVendasDto.getVendas().forEach(vendaDto -> {
+            Venda venda = modelMapper.map(vendaDto, Venda.class);
+
+            UtilidadesData.configurarDatasComFusoHorarioBrasileiro(venda);
+
+            venda.setCliente(cliente);
+
+            vendas.add(venda);
+        });
+
+        this.vendaRepository.saveAll(vendas);
     }
 }
