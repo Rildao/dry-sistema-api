@@ -1,6 +1,5 @@
 package com.drylands.api.rest.dtos.venda;
 
-import com.drylands.api.domain.EntidadeAbstrata;
 import com.drylands.api.domain.enums.EStatusVenda;
 import com.drylands.api.domain.enums.ETipoVenda;
 import com.drylands.api.rest.dtos.cliente.ClienteDTO;
@@ -11,11 +10,9 @@ import java.util.Date;
 
 @Getter
 @Setter
-public class VendaDTO {
+public class VendaSimplificadoDTO {
 
     private Long id;
-
-    private ClienteDTO cliente;
 
     private ETipoVenda tipoVenda;
 
