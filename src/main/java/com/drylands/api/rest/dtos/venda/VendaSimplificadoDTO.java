@@ -2,7 +2,6 @@ package com.drylands.api.rest.dtos.venda;
 
 import com.drylands.api.domain.enums.EStatusVenda;
 import com.drylands.api.domain.enums.ETipoVenda;
-import com.drylands.api.rest.dtos.cliente.ClienteDTO;
 import lombok.Getter;
 import lombok.Setter;
 
