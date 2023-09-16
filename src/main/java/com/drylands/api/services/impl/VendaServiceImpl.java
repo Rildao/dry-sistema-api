@@ -1,10 +1,14 @@
 package com.drylands.api.services.impl;
 
+import com.drylands.api.domain.LancamentoCrediario;
 import com.drylands.api.domain.Venda;
+import com.drylands.api.domain.enums.EStatusVenda;
+import com.drylands.api.domain.enums.ETipoVenda;
 import com.drylands.api.infrastructure.exceptions.NotFoundException;
 import com.drylands.api.infrastructure.repositories.VendaRepository;
 import com.drylands.api.rest.dtos.venda.ListagemVendaDTO;
 import com.drylands.api.rest.dtos.venda.VendaDTO;
+import com.drylands.api.services.LancamentoCrediarioService;
 import com.drylands.api.services.VendaService;
 import com.drylands.api.utils.UtilidadesData;
 import org.modelmapper.ModelMapper;
@@ -13,19 +17,21 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class VendaServiceImpl implements VendaService {
 
     VendaRepository vendaRepository;
+    
+    LancamentoCrediarioService lancamentoCrediarioService;
 
     private ModelMapper modelMapper;
 
-    public VendaServiceImpl(VendaRepository vendaRepository, ModelMapper modelMapper) {
+    public VendaServiceImpl(VendaRepository vendaRepository, 
+                            LancamentoCrediarioService lancamentoCrediarioService,
+                            ModelMapper modelMapper) {
+        this.lancamentoCrediarioService = lancamentoCrediarioService;
         this.vendaRepository = vendaRepository;
         this.modelMapper = modelMapper;
     }
@@ -35,10 +41,14 @@ public class VendaServiceImpl implements VendaService {
     public Venda criarVenda(VendaDTO vendaDto) {
 
         Venda novaVenda = modelMapper.map(vendaDto, Venda.class);
+        
+        novaVenda = this.vendaRepository.save(novaVenda);
+
+        // this.gerandoLancamentosParaCrediario(novaVenda);
 
         UtilidadesData.configurarDatasComFusoHorarioBrasileiro(novaVenda);
 
-        return this.vendaRepository.save(novaVenda);
+        return novaVenda;
     }
 
     @Override
@@ -126,5 +136,36 @@ public class VendaServiceImpl implements VendaService {
         this.pegarVendaPorId(id);
 
         this.vendaRepository.deleteById(id);
+    }
+
+    private void gerandoLancamentosParaCrediario(Venda venda) {
+        if (venda.getTipoVenda().equals(ETipoVenda.CREDIARIO)) {
+            float valorParcela = venda.getValorVenda()/ venda.getQuantidadeParcelas();
+
+            Date dataBaseParaLancamentos;
+
+            if(Objects.nonNull(venda.getDataVencimentoLancamento())) {
+                dataBaseParaLancamentos = venda.getDataVencimentoLancamento();
+            } else {
+                dataBaseParaLancamentos = venda.getDataVenda();
+            }
+
+             // Calendar calendar = Calendar.getInstance();
+             // calendar.setTime(dataBaseParaLancamentos);
+             // calendar.add(Calendar.MONTH, 1);
+
+            for(float qtdLancamentos = 0; qtdLancamentos <= venda.getQuantidadeParcelas(); qtdLancamentos++) {
+                LancamentoCrediario lancamentoCrediario = new LancamentoCrediario();
+
+                lancamentoCrediario.setVenda(venda);
+                lancamentoCrediario.setValorParcela(valorParcela);
+                lancamentoCrediario.setDataPagamento(dataBaseParaLancamentos);
+                lancamentoCrediario.setStatusVenda(EStatusVenda.ANDAMENTO);
+
+                this.lancamentoCrediarioService.criarLancamentoCrediario(lancamentoCrediario);
+
+                // calendar.add(Calendar.MONTH, 1);
+            }
+        }
     }
 }

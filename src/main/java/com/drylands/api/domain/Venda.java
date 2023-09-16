@@ -15,15 +15,15 @@ import java.util.Date;
 public class Venda extends EntidadeAbstrata {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "user_seq")
-    @SequenceGenerator(name = "user_seq", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "venda_seq")
+    @SequenceGenerator(name = "venda_seq", allocationSize = 1)
     private Long id;
 
     @ManyToOne
     @JoinColumn(name="cliente_id", nullable = false)
     private Cliente cliente;
 
-    @Column(name = "tipo_venda")
+    @Column(name = "tipo_venda", nullable = false)
     private ETipoVenda tipoVenda;
 
     @Column(name = "quantidade_parcelas")
@@ -32,9 +32,12 @@ public class Venda extends EntidadeAbstrata {
     @Column(name = "valor_venda")
     private float valorVenda;
 
-    @Column(name = "status_venda")
+    @Column(name = "status_venda", nullable = false)
     private EStatusVenda statusVenda;
 
-    @Column(name = "data_venda")
+    @Column(name = "data_venda", nullable = false)
     private Date dataVenda;
+
+    @Column(name = "data_vencimento_lancamento")
+    private Date dataVencimentoLancamento;
 }
