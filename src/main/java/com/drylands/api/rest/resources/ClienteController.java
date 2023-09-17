@@ -32,7 +32,7 @@ public class ClienteController extends AbstractController {
     @PostMapping("/venda")
     @Operation(tags = "Cliente", summary = "Criar cliente e relacionar a vendas")
     public ResponseEntity<ClienteDTO> criarCliente(@RequestBody ClienteVendasDTO clienteVendasDTO) {
-        return new ResponseEntity<>(mapearDTO(this.clienteService.criarClienteComVendas(clienteVendasDTO), ClienteDTO.class), HttpStatus.OK);
+        return new ResponseEntity<>(mapearDTO(this.clienteService.criarOuAtualizarClienteComVendas(clienteVendasDTO), ClienteDTO.class), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")

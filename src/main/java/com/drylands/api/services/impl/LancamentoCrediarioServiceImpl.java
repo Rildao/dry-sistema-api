@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -39,6 +40,11 @@ public class LancamentoCrediarioServiceImpl implements LancamentoCrediarioServic
     }
 
     @Override
+    public List<LancamentoCrediario> pegarLancamentosPorVendaId(Long id) {
+        return this.lancamentoCrediarioRepository.findAllByVendaId(id);
+    }
+
+    @Override
     public void deletarLancamentosPorClienteId(Long clienteId) {
         this.lancamentoCrediarioRepository.deleteByVendaClienteId(clienteId);
     }
@@ -61,10 +67,14 @@ public class LancamentoCrediarioServiceImpl implements LancamentoCrediarioServic
 
                 LocalDate dataVenda = venda.getDataVenda();
 
-                LocalDate proximoDiaVencimento = LocalDate.of(dataVenda.getYear(), dataVenda.getMonth(), diaVencimento);
+                LocalDate proximoDiaVencimento = null;
 
-                if (proximoDiaVencimento.isBefore(dataVenda)) {
-                    proximoDiaVencimento = proximoDiaVencimento.plus(1, ChronoUnit.MONTHS);
+                if(!Objects.equals(venda.getDiaVencimentoLancamento(), 0)) {
+                    proximoDiaVencimento = LocalDate.of(dataVenda.getYear(), dataVenda.getMonth(), diaVencimento);
+
+                    if (proximoDiaVencimento.isBefore(dataVenda)) proximoDiaVencimento = proximoDiaVencimento.plus(1, ChronoUnit.MONTHS);
+                } else {
+                    proximoDiaVencimento = dataVenda;
                 }
 
                 dataBaseParaLancamentos = proximoDiaVencimento;
