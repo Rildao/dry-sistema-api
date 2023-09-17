@@ -5,6 +5,7 @@ import com.drylands.api.domain.enums.ETipoVenda;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Getter
@@ -21,7 +22,7 @@ public class VendaSimplificadoDTO {
 
     private EStatusVenda statusVenda;
 
-    private Date dataVenda;
+    private LocalDate dataVenda;
 
     private Date dataCriacao;
 

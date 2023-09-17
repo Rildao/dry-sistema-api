@@ -2,6 +2,8 @@ package com.drylands.api.services.impl;
 
 import com.drylands.api.domain.Cliente;
 import com.drylands.api.domain.Venda;
+import com.drylands.api.domain.enums.EStatusVenda;
+import com.drylands.api.domain.enums.ETipoVenda;
 import com.drylands.api.infrastructure.exceptions.BadRequestException;
 import com.drylands.api.infrastructure.exceptions.NotFoundException;
 import com.drylands.api.infrastructure.repositories.ClienteRepository;
@@ -11,6 +13,7 @@ import com.drylands.api.rest.dtos.cliente.ClienteVendasDTO;
 import com.drylands.api.rest.dtos.cliente.ListagemClienteDTO;
 import com.drylands.api.rest.dtos.venda.VendaSimplificadoDTO;
 import com.drylands.api.services.ClienteService;
+import com.drylands.api.services.LancamentoCrediarioService;
 import com.drylands.api.utils.UtilidadesData;
 import com.drylands.api.utils.UtilidadesDocumentos;
 import org.modelmapper.ModelMapper;
@@ -31,12 +34,15 @@ public class ClienteServiceImpl implements ClienteService {
 
     VendaRepository vendaRepository;
 
+    LancamentoCrediarioService lancamentoCrediarioService;
+
     private ModelMapper modelMapper;
 
     public ClienteServiceImpl(ClienteRepository clienteRepository,
-            VendaRepository vendaRepository, ModelMapper modelMapper) {
+            VendaRepository vendaRepository, LancamentoCrediarioService lancamentoCrediarioService, ModelMapper modelMapper) {
         this.clienteRepository = clienteRepository;
         this.vendaRepository = vendaRepository;
+        this.lancamentoCrediarioService = lancamentoCrediarioService;
         this.modelMapper = modelMapper;
     }
 
@@ -188,11 +194,13 @@ public class ClienteServiceImpl implements ClienteService {
 
             UtilidadesData.configurarDatasComFusoHorarioBrasileiro(venda);
 
+            if (Objects.equals(vendaDto.getTipoVenda(), ETipoVenda.CREDIARIO)) vendaDto.setStatusVenda(EStatusVenda.ANDAMENTO);
+
             venda.setCliente(cliente);
 
             vendas.add(venda);
         });
 
-        this.vendaRepository.saveAll(vendas);
+        this.vendaRepository.saveAll(vendas).forEach(venda -> this.lancamentoCrediarioService.gerandoLancamentosParaCrediario(venda));
     }
 }

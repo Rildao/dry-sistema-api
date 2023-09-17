@@ -1,6 +1,5 @@
 package com.drylands.api.services.impl;
 
-import com.drylands.api.domain.LancamentoCrediario;
 import com.drylands.api.domain.Venda;
 import com.drylands.api.domain.enums.EStatusVenda;
 import com.drylands.api.domain.enums.ETipoVenda;
@@ -41,10 +40,12 @@ public class VendaServiceImpl implements VendaService {
     public Venda criarVenda(VendaDTO vendaDto) {
 
         Venda novaVenda = modelMapper.map(vendaDto, Venda.class);
+
+        if (Objects.equals(vendaDto.getTipoVenda(), ETipoVenda.CREDIARIO)) vendaDto.setStatusVenda(EStatusVenda.ANDAMENTO);
         
         novaVenda = this.vendaRepository.save(novaVenda);
 
-        // this.gerandoLancamentosParaCrediario(novaVenda);
+        this.lancamentoCrediarioService.gerandoLancamentosParaCrediario(novaVenda);
 
         UtilidadesData.configurarDatasComFusoHorarioBrasileiro(novaVenda);
 
@@ -136,36 +137,5 @@ public class VendaServiceImpl implements VendaService {
         this.pegarVendaPorId(id);
 
         this.vendaRepository.deleteById(id);
-    }
-
-    private void gerandoLancamentosParaCrediario(Venda venda) {
-        if (venda.getTipoVenda().equals(ETipoVenda.CREDIARIO)) {
-            float valorParcela = venda.getValorVenda()/ venda.getQuantidadeParcelas();
-
-            Date dataBaseParaLancamentos;
-
-            if(Objects.nonNull(venda.getDataVencimentoLancamento())) {
-                dataBaseParaLancamentos = venda.getDataVencimentoLancamento();
-            } else {
-                dataBaseParaLancamentos = venda.getDataVenda();
-            }
-
-             // Calendar calendar = Calendar.getInstance();
-             // calendar.setTime(dataBaseParaLancamentos);
-             // calendar.add(Calendar.MONTH, 1);
-
-            for(float qtdLancamentos = 0; qtdLancamentos <= venda.getQuantidadeParcelas(); qtdLancamentos++) {
-                LancamentoCrediario lancamentoCrediario = new LancamentoCrediario();
-
-                lancamentoCrediario.setVenda(venda);
-                lancamentoCrediario.setValorParcela(valorParcela);
-                lancamentoCrediario.setDataPagamento(dataBaseParaLancamentos);
-                lancamentoCrediario.setStatusVenda(EStatusVenda.ANDAMENTO);
-
-                this.lancamentoCrediarioService.criarLancamentoCrediario(lancamentoCrediario);
-
-                // calendar.add(Calendar.MONTH, 1);
-            }
-        }
     }
 }

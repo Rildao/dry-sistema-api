@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -26,7 +26,7 @@ public class LancamentoCrediario {
     private float valorParcela;
 
     @Column(name = "data_pagamento", nullable = false)
-    private Date dataPagamento;
+    private LocalDate dataPagamento;
 
     @Column(name = "status_venda", nullable = false)
     private EStatusVenda statusVenda;
