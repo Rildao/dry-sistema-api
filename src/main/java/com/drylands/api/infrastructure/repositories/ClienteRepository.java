@@ -18,6 +18,6 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long> {
             " OR c.cpf LIKE CONCAT('%', :filter ,'%') ")
     Page<Cliente> findAllByFilters(Pageable pageable, String filter);
 
-    @Query(value = "SELECT COUNT(*) FROM cliente", nativeQuery = true)
+    @Query(value = "SELECT COUNT(c) FROM Cliente c WHERE MONTH(c.dataCriacao) = MONTH(CURRENT_DATE) AND YEAR(c.dataCriacao) = YEAR(CURRENT_DATE)")
     BigInteger totalDeClientes();
 }
