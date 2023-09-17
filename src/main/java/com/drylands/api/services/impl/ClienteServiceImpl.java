@@ -1,6 +1,7 @@
 package com.drylands.api.services.impl;
 
 import com.drylands.api.domain.Cliente;
+import com.drylands.api.domain.LancamentoCrediario;
 import com.drylands.api.domain.Venda;
 import com.drylands.api.domain.enums.EStatusVenda;
 import com.drylands.api.domain.enums.ETipoVenda;
@@ -66,27 +67,36 @@ public class ClienteServiceImpl implements ClienteService {
 
     @Override
     @Transactional
-    public Cliente criarClienteComVendas(ClienteVendasDTO clienteVendasDto) {
+    public Cliente criarOuAtualizarClienteComVendas(ClienteVendasDTO clienteVendasDto) {
+        Cliente clienteEntidade = new Cliente();
 
         Optional<Cliente> cliente = this.clienteRepository.findByCpf(clienteVendasDto.getCpf());
 
-        clienteValidacaoDeCampos(cliente);
+        if(Objects.nonNull(clienteVendasDto.getId())) {
+            UtilidadesDocumentos.validarCpf(clienteVendasDto.getCpf());
 
-        UtilidadesDocumentos.validarCpf(clienteVendasDto.getCpf());
+            clienteEntidade = cliente.get();
 
-        Cliente novoCliente = new Cliente();
+            clienteEntidade.setNome(clienteVendasDto.getNome());
+            clienteEntidade.setCpf(clienteVendasDto.getCpf());
+            clienteEntidade.setEndereco(clienteVendasDto.getEndereco());
+            clienteEntidade.setTelefone(clienteVendasDto.getTelefone());
+            UtilidadesData.configurarDatasComFusoHorarioBrasileiroParaAtualizar(clienteEntidade);
+        } else {
+            clienteValidacaoDeCampos(cliente);
 
-        novoCliente.setNome(clienteVendasDto.getNome());
-        novoCliente.setCpf(clienteVendasDto.getCpf());
-        novoCliente.setEndereco(clienteVendasDto.getEndereco());
-        novoCliente.setTelefone(clienteVendasDto.getTelefone());
-        UtilidadesData.configurarDatasComFusoHorarioBrasileiro(novoCliente);
+            clienteEntidade.setNome(clienteVendasDto.getNome());
+            clienteEntidade.setCpf(clienteVendasDto.getCpf());
+            clienteEntidade.setEndereco(clienteVendasDto.getEndereco());
+            clienteEntidade.setTelefone(clienteVendasDto.getTelefone());
+            UtilidadesData.configurarDatasComFusoHorarioBrasileiro(clienteEntidade);
+        }
 
-        novoCliente = this.clienteRepository.save(novoCliente);
+        clienteEntidade = this.clienteRepository.save(clienteEntidade);
 
-        relacionarClienteVenda(clienteVendasDto, novoCliente);
+        relacionarClienteVenda(clienteVendasDto, clienteEntidade);
 
-        return novoCliente;
+        return clienteEntidade;
     }
 
     @Override
@@ -191,18 +201,41 @@ public class ClienteServiceImpl implements ClienteService {
     private void relacionarClienteVenda(ClienteVendasDTO clienteVendasDto, Cliente cliente) {
         List<Venda> vendas = new ArrayList<>();
 
+
         clienteVendasDto.getVendas().forEach(vendaDto -> {
-            Venda venda = modelMapper.map(vendaDto, Venda.class);
 
-            UtilidadesData.configurarDatasComFusoHorarioBrasileiro(venda);
+            if(Objects.nonNull(vendaDto.getId())) {
+                Venda venda = this.vendaRepository.findById(vendaDto.getId()).get();
+                venda.setValorVenda(vendaDto.getValorVenda());
+                venda.setStatusVenda(vendaDto.getStatusVenda());
+                venda.setDiaVencimentoLancamento(vendaDto.getDiaVencimentoLancamento());
+                venda.setTipoVenda(vendaDto.getTipoVenda());
+                venda.setQuantidadeParcelas(vendaDto.getQuantidadeParcelas());
+                venda.setDataVenda(vendaDto.getDataVenda());
 
-            if (Objects.equals(vendaDto.getTipoVenda(), ETipoVenda.CREDIARIO)) vendaDto.setStatusVenda(EStatusVenda.ANDAMENTO);
+                UtilidadesData.configurarDatasComFusoHorarioBrasileiroParaAtualizar(venda);
 
-            venda.setCliente(cliente);
+                vendas.add(venda);
+            } else {
+                Venda venda = modelMapper.map(vendaDto, Venda.class);
+                UtilidadesData.configurarDatasComFusoHorarioBrasileiro(venda);
+                if (Objects.equals(vendaDto.getTipoVenda(), ETipoVenda.CREDIARIO)) vendaDto.setStatusVenda(EStatusVenda.ANDAMENTO);
 
-            vendas.add(venda);
+                venda.setCliente(cliente);
+                vendas.add(venda);
+            }
         });
 
-        this.vendaRepository.saveAll(vendas).forEach(venda -> this.lancamentoCrediarioService.gerandoLancamentosParaCrediario(venda));
+        List<Venda> vendaSalvas =  this.vendaRepository.saveAll(vendas);
+
+        vendaSalvas
+                .stream()
+                .filter(venda -> venda.getTipoVenda().equals(ETipoVenda.CREDIARIO))
+                .forEach(venda -> {
+                    List<LancamentoCrediario> lancamentoCrediarios = this.lancamentoCrediarioService.pegarLancamentosPorVendaId(venda.getId());
+                    if(lancamentoCrediarios.isEmpty()) {
+                        this.lancamentoCrediarioService.gerandoLancamentosParaCrediario(venda);
+                    }
+                });
     }
 }
