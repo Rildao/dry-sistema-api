@@ -20,6 +20,8 @@ public interface VendaRepository extends JpaRepository<Venda, Long> {
             "WHERE c.id = ?1 ORDER BY venda.dataCriacao DESC")
     List<Venda> findAllByClienteIdAndDataCriacaoOrderByDesc(Long id);
 
+    void deleteByClienteId(Long id);
+
     @Query(value = "SELECT v FROM Venda v WHERE v.tipoVenda = CREDIARIO")
     List<Venda> findAllByTypeSaleCredit();
 
@@ -37,4 +39,5 @@ public interface VendaRepository extends JpaRepository<Venda, Long> {
 
     @Query("SELECT SUM(v.valorVenda) FROM Venda v WHERE MONTH(v.dataVenda) = MONTH(CURRENT_DATE) AND YEAR(v.dataVenda) = YEAR(CURRENT_DATE) AND  v.tipoVenda = DINHEIRO")
     BigDecimal valorTotalDeVendasRealizadasNoDinheiro();
+
 }
