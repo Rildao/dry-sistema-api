@@ -28,5 +28,5 @@ public class VendaSimplificadoDTO {
 
     private Date dataAtualizacao;
 
-    private Date dataVencimentoLancamento;
+    private int diaVencimentoLancamento;
 }

@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface ClienteService {
     public Cliente criarCliente (ClienteDTO cliente);
-    public Cliente criarClienteComVendas(ClienteVendasDTO clienteVendasDto);
+    public Cliente criarOuAtualizarClienteComVendas(ClienteVendasDTO clienteVendasDto);
     public Cliente atualizarCliente (Long id, ClienteDTO cliente);
     public ClienteVendasDTO pegarClientePorId (Long id);
     public ListagemClienteDTO listarClientes (Pageable pageable, String filter);
