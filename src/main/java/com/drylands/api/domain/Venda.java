@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -36,8 +36,8 @@ public class Venda extends EntidadeAbstrata {
     private EStatusVenda statusVenda;
 
     @Column(name = "data_venda", nullable = false)
-    private Date dataVenda;
+    private LocalDate dataVenda;
 
-    @Column(name = "data_vencimento_lancamento")
-    private Date dataVencimentoLancamento;
+    @Column(name = "dia_vencimento_lancamento")
+    private int diaVencimentoLancamento;
 }

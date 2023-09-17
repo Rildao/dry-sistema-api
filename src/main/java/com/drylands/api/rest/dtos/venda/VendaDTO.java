@@ -7,6 +7,7 @@ import com.drylands.api.rest.dtos.cliente.ClienteDTO;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Getter
@@ -25,11 +26,11 @@ public class VendaDTO {
 
     private EStatusVenda statusVenda;
 
-    private Date dataVenda;
+    private LocalDate dataVenda;
 
     private Date dataCriacao;
 
     private Date dataAtualizacao;
 
-    private Date dataVencimentoLancamento;
+    private int diaVencimentoLancamento;
 }
