@@ -151,6 +151,8 @@ public class ClienteServiceImpl implements ClienteService {
     public void deletarCliente(Long id) {
         this.pegarClientePorId(id);
 
+        this.lancamentoCrediarioService.deletarLancamentosPorClienteId(id);
+        this.vendaRepository.deleteByClienteId(id);
         this.clienteRepository.deleteById(id);
     }
 
