@@ -17,4 +17,7 @@ public interface VendaRepository extends JpaRepository<Venda, Long> {
             "INNER JOIN venda.cliente c " +
             "WHERE c.id = ?1 ORDER BY venda.dataCriacao DESC")
     List<Venda> findAllByClienteIdAndDataCriacaoOrderByDesc(Long id);
+
+    @Query(value = "SELECT v FROM Venda v WHERE v.tipoVenda = CREDIARIO")
+    List<Venda> findAllByTypeSaleCredit();
 }
