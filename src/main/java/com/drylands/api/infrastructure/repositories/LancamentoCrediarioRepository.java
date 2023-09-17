@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface LancamentoCrediarioRepository extends JpaRepository<LancamentoCrediario, Long> {
     List<LancamentoCrediario> findAllByVendaId(Long vendaId);
+    void deleteByVendaClienteId(Long clienteId);
+    void deleteByVendaId(Long vendaId);
 }

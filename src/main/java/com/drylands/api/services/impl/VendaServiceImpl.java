@@ -136,6 +136,7 @@ public class VendaServiceImpl implements VendaService {
     public void deletarVenda(Long id) {
         this.pegarVendaPorId(id);
 
+        this.lancamentoCrediarioService.deletarLancamentosPorVendaId(id);
         this.vendaRepository.deleteById(id);
     }
 }

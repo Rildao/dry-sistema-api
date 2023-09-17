@@ -39,6 +39,17 @@ public class LancamentoCrediarioServiceImpl implements LancamentoCrediarioServic
     }
 
     @Override
+    public void deletarLancamentosPorClienteId(Long clienteId) {
+        this.lancamentoCrediarioRepository.deleteByVendaClienteId(clienteId);
+    }
+
+    @Override
+    public void deletarLancamentosPorVendaId(Long vendaId) {
+        this.lancamentoCrediarioRepository.deleteByVendaId(vendaId);
+
+    }
+
+    @Override
     public void gerandoLancamentosParaCrediario(Venda venda) {
         if (venda.getTipoVenda().equals(ETipoVenda.CREDIARIO)) {
             float valorParcela = venda.getValorVenda()/venda.getQuantidadeParcelas();
