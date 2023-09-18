@@ -30,13 +30,13 @@ public class VendaController extends AbstractController {
 
     @PutMapping("/{id}")
     @Operation(tags = "Venda", summary = "Atualizar venda por id")
-    public ResponseEntity<VendaDTO> atualizarVenda(@RequestBody VendaDTO vendaDto, @RequestParam("id") Long id) {
+    public ResponseEntity<VendaDTO> atualizarVenda(@RequestBody VendaDTO vendaDto, @PathVariable("id") Long id) {
         return new ResponseEntity<>(mapearDTO(this.vendaService.atualizarVenda(id, vendaDto), VendaDTO.class), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     @Operation(tags = "Venda", summary = "Pegar venda por id")
-    public ResponseEntity<VendaDTO> pegarClientePorId(@RequestParam("id") Long id) {
+    public ResponseEntity<VendaDTO> pegarVendaPorId(@PathVariable("id") Long id) {
         return new ResponseEntity<>(mapearDTO(this.vendaService.pegarVendaPorId(id), VendaDTO.class), HttpStatus.OK);
     }
 
@@ -48,7 +48,7 @@ public class VendaController extends AbstractController {
 
     @DeleteMapping("/{id}")
     @Operation(tags = "Venda", summary = "Deletar venda por id")
-    public ResponseEntity<ApiResponseDTO> deletarCliente(@RequestParam("id") Long id) {
+    public ResponseEntity<ApiResponseDTO> deletarVenda(@PathVariable("id") Long id) {
         this.vendaService.deletarVenda(id);
         return new ResponseEntity<>(new ApiResponseDTO(true, "Venda deletada com sucesso"), HttpStatus.OK);
     }

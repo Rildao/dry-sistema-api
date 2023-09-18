@@ -37,13 +37,13 @@ public class ClienteController extends AbstractController {
 
     @PutMapping("/{id}")
     @Operation(tags = "Cliente", summary = "Atualizar cliente por id")
-    public ResponseEntity<ClienteDTO> atualizarCliente(@RequestBody ClienteDTO clienteDTO, @RequestParam("id") Long id) {
+    public ResponseEntity<ClienteDTO> atualizarCliente(@RequestBody ClienteDTO clienteDTO, @PathVariable("id") Long id) {
         return new ResponseEntity<>(mapearDTO(this.clienteService.atualizarCliente(id, clienteDTO), ClienteDTO.class), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     @Operation(tags = "Cliente", summary = "Pegar cliente por id")
-    public ResponseEntity<ClienteVendasDTO> pegarClientePorId(@RequestParam("id") Long id) {
+    public ResponseEntity<ClienteVendasDTO> pegarClientePorId(@PathVariable("id") Long id) {
         return new ResponseEntity<>(this.clienteService.pegarClientePorId(id), HttpStatus.OK);
     }
 
@@ -56,7 +56,7 @@ public class ClienteController extends AbstractController {
 
     @DeleteMapping("/{id}")
     @Operation(tags = "Cliente", summary = "Deletar cliente por id")
-    public ResponseEntity<ApiResponseDTO> deletarCliente(@RequestParam("id") Long id) {
+    public ResponseEntity<ApiResponseDTO> deletarCliente(@PathVariable("id") Long id) {
         this.clienteService.deletarCliente(id);
         return new ResponseEntity<>(new ApiResponseDTO(true, "Cliente deletado com sucesso"), HttpStatus.OK);
     }
