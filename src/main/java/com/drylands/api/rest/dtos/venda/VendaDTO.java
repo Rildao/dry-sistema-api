@@ -33,4 +33,6 @@ public class VendaDTO {
     private Date dataAtualizacao;
 
     private int diaVencimentoLancamento;
+
+    private String descricao;
 }
