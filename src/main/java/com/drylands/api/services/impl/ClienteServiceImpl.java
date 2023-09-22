@@ -212,6 +212,7 @@ public class ClienteServiceImpl implements ClienteService {
                 venda.setTipoVenda(vendaDto.getTipoVenda());
                 venda.setQuantidadeParcelas(vendaDto.getQuantidadeParcelas());
                 venda.setDataVenda(vendaDto.getDataVenda());
+                venda.setDescricao(vendaDto.getDescricao());
 
                 UtilidadesData.configurarDatasComFusoHorarioBrasileiroParaAtualizar(venda);
 

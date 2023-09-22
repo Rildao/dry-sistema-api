@@ -40,4 +40,7 @@ public class Venda extends EntidadeAbstrata {
 
     @Column(name = "dia_vencimento_lancamento")
     private int diaVencimentoLancamento;
+
+    @Column(name = "descricao", length = 2056)
+    private String descricao;
 }
