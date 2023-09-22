@@ -4,8 +4,10 @@ import com.drylands.api.domain.LancamentoCrediario;
 import com.drylands.api.domain.Venda;
 import com.drylands.api.domain.enums.EStatusVenda;
 import com.drylands.api.domain.enums.ETipoVenda;
+import com.drylands.api.infrastructure.exceptions.NotFoundException;
 import com.drylands.api.infrastructure.repositories.LancamentoCrediarioRepository;
 import com.drylands.api.infrastructure.repositories.VendaRepository;
+import com.drylands.api.rest.dtos.lancamento_crediario.LancamentoCrediarioDTO;
 import com.drylands.api.services.LancamentoCrediarioService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 
 @Service
@@ -37,6 +40,17 @@ public class LancamentoCrediarioServiceImpl implements LancamentoCrediarioServic
     @Transactional
     public LancamentoCrediario criarLancamentoCrediario(LancamentoCrediario lancamentoCrediario) {
         return this.lancamentoCrediarioRepository.save(lancamentoCrediario);
+    }
+
+    @Override
+    public LancamentoCrediario atualizarStatusLancamentoCrediarioPorId(Long id) {
+        Optional<LancamentoCrediario> lancamentoCrediario = this.lancamentoCrediarioRepository.findById(id);
+
+        if(lancamentoCrediario.isEmpty()) throw new NotFoundException("Lancamento não encontrada.");
+
+        lancamentoCrediario.get().setStatusVenda(EStatusVenda.PAGO);
+
+        return this.lancamentoCrediarioRepository.save(lancamentoCrediario.get());
     }
 
     @Override
