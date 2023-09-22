@@ -1,8 +1,6 @@
 package com.drylands.api.utils;
 
-import com.drylands.api.domain.Cliente;
-import com.drylands.api.domain.Usuario;
-import com.drylands.api.domain.Venda;
+import com.drylands.api.domain.EntidadeAbstrata;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -10,41 +8,18 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 
 public class UtilidadesData {
-    public static void configurarDatasComFusoHorarioBrasileiro(Usuario usuario) {
+    public static <T extends EntidadeAbstrata> void configurarDatasComFusoHorarioBrasileiro(T entidade) {
         ZonedDateTime zdt = ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("America/Sao_Paulo"));
         Date date = Date.from(zdt.toInstant());
 
-        usuario.setDataCriacao(date);
-        usuario.setDataAtualizacao(date);
+        entidade.setDataCriacao(date);
+        entidade.setDataAtualizacao(date);
     }
 
-    public static void configurarDatasComFusoHorarioBrasileiro(Cliente entity) {
+    public static <T extends EntidadeAbstrata> void configurarDatasComFusoHorarioBrasileiroParaAtualizar(T entidade) {
         ZonedDateTime zdt = ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("America/Sao_Paulo"));
         Date date = Date.from(zdt.toInstant());
 
-        entity.setDataCriacao(date);
-        entity.setDataAtualizacao(date);
-    }
-
-    public static void configurarDatasComFusoHorarioBrasileiro(Venda entity) {
-        ZonedDateTime zdt = ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("America/Sao_Paulo"));
-        Date date = Date.from(zdt.toInstant());
-
-        entity.setDataCriacao(date);
-        entity.setDataAtualizacao(date);
-    }
-
-    public static void configurarDatasComFusoHorarioBrasileiroParaAtualizar(Cliente entity) {
-        ZonedDateTime zdt = ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("America/Sao_Paulo"));
-        Date date = Date.from(zdt.toInstant());
-
-        entity.setDataAtualizacao(date);
-    }
-
-    public static void configurarDatasComFusoHorarioBrasileiroParaAtualizar(Venda entity) {
-        ZonedDateTime zdt = ZonedDateTime.of(LocalDateTime.now(), ZoneId.of("America/Sao_Paulo"));
-        Date date = Date.from(zdt.toInstant());
-
-        entity.setDataAtualizacao(date);
+        entidade.setDataAtualizacao(date);
     }
 }
