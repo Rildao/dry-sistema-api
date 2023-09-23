@@ -16,7 +16,7 @@ public class Notificacao extends EntidadeAbstrata {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name="venda_id", nullable = false)
+    @JoinColumn(name = "venda_id", nullable = false)
     private Venda venda;
 
     @Column(name = "mensagem", length = 2056, nullable = false)
@@ -24,13 +24,4 @@ public class Notificacao extends EntidadeAbstrata {
 
     @Column(name = "lido", nullable = false)
     private Boolean lido;
-
-    @Column(name = "favorito", nullable = false)
-    private Boolean favorito;
-
-    @Column(name = "arquivado", nullable = false)
-    private Boolean arquivado;
-
-    @Column(name = "enviado", nullable = false)
-    private Boolean enviado;
 }
