@@ -7,12 +7,25 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigInteger;
+
 @Repository
 public interface NotificacaoRepository extends JpaRepository<Notificacao, Long> {
 
     @Query(value = "SELECT n FROM Notificacao n " +
             "  JOIN n.venda v " +
             "  JOIN v.cliente c " +
-            " WHERE n.lido = ?1 AND (c.nome = ?2 OR c.cpf = ?2 OR c.telefone = ?2) ")
+            " WHERE n.lido = ?1 " +
+            " ORDER BY n.dataCriacao DESC")
+    Page<Notificacao> listarNotificacoesComFiltrosEPaginado(boolean lido, Pageable pageable);
+
+    @Query(value = "SELECT n FROM Notificacao n " +
+            "  JOIN n.venda v " +
+            "  JOIN v.cliente c " +
+            " WHERE n.lido = :lido AND (c.nome ILIKE CONCAT('%', :filter ,'%') OR c.cpf ILIKE CONCAT('%', :filter ,'%') OR c.telefone ILIKE CONCAT('%', :filter ,'%')) " +
+            " ORDER BY n.dataCriacao DESC")
     Page<Notificacao> listarNotificacoesComFiltrosEPaginado(boolean lido, String filter, Pageable pageable);
+
+    @Query(value = " SELECT COUNT(n) FROM Notificacao n WHERE n.lido = FALSE ")
+    BigInteger contagemDeNotificacoesNaoLidas();
 }
