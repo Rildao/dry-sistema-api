@@ -18,12 +18,6 @@ public class NotificacaoDTO {
 
     private Boolean lido;
 
-    private Boolean favorito;
-
-    private Boolean arquivado;
-
-    private Boolean enviado;
-
     private Date dataCriacao;
 
     private Date dataAtualizacao;
