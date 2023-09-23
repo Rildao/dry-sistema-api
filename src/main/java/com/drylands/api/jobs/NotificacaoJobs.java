@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -24,8 +25,9 @@ public class NotificacaoJobs {
 
     private final VendaRepository vendaRepository;
 
+    private static final String MENSAGEM_ATRASO = "Parcela a ser paga em {data} por {cliente} atrasada.";
 
-    private static final String MENSAGEM_ATRASO = "Parcela programa para {data} em atraso";
+    private static final String MENSAGEM_ALERTA = "Parcela a ser paga em {data} por {cliente} perto do prazo de vencimento.";
 
     private final ClienteRepository clienteRepository;
 
@@ -37,8 +39,8 @@ public class NotificacaoJobs {
     }
 
     @Scheduled(cron = "0 0 8 * * *")
-    public void criarNotifacoes() {
-        log.warn("JOB: criar notificaçoes ");
+    public void criarNotifacoesDeAtraso() {
+        log.warn("JOB: criar notificaçoes de atraso de pagamento");
 
         List<LancamentoCrediario> lancamentos = this.lancamentoCrediarioRepository.listarLancamentosEmAtraso();
 
@@ -49,13 +51,40 @@ public class NotificacaoJobs {
                 DateTimeFormatter formatador = DateTimeFormatter.ofPattern("yyyy/MM/dd");
                 String data = lancamento.getVenda().getDataVenda().format(formatador);
 
-                notificacao.setMensagem(MENSAGEM_ATRASO.replace("{data}", data));
+                notificacao.setMensagem(MENSAGEM_ATRASO.replace("{data}", data).replace("{cliente}", lancamento.getVenda().getCliente().getNome()));
                 notificacao.setLido(Boolean.FALSE);
                 notificacao.setVenda(lancamento.getVenda());
 
                 notificacao = this.notificacaoRepository.save(notificacao);
 
-                log.warn("JOB: notificação {} criada com sucesso. ", notificacao);
+                log.warn("JOB: notificação de atraso {} criada com sucesso. ", notificacao);
+            }
+        });
+    }
+
+    @Scheduled(cron = "0 0 9 * * *")
+    public void criarNotifacoesDeAlerta() {
+        log.warn("JOB: criar notificaçoes de alerta ");
+
+        List<LancamentoCrediario> lancamentos = this.lancamentoCrediarioRepository.findAll();
+
+        lancamentos.forEach(lancamento ->  {
+            LocalDate dataPagamento = lancamento.getDataPagamento();
+            LocalDate hoje = LocalDate.now();
+
+            if (dataPagamento.equals(hoje.minusDays(1)) && lancamento.getStatusVenda().equals(EStatusVenda.ANDAMENTO)) {
+                Notificacao notificacao = new Notificacao();
+
+                DateTimeFormatter formatador = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+                String data = lancamento.getVenda().getDataVenda().format(formatador);
+
+                notificacao.setMensagem(MENSAGEM_ALERTA.replace("{data}", data).replace("{cliente}", lancamento.getVenda().getCliente().getNome()));
+                notificacao.setLido(Boolean.FALSE);
+                notificacao.setVenda(lancamento.getVenda());
+
+                notificacao = this.notificacaoRepository.save(notificacao);
+
+                log.warn("JOB: notificação de alerta {} criada com sucesso. ", notificacao);
             }
         });
     }
