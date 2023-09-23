@@ -35,7 +35,7 @@ public class VendasJobs {
             LocalDate dataPagamento = lancamentoCrediario.getDataPagamento();
             LocalDate hoje = LocalDate.now();
 
-            if (dataPagamento.isBefore(hoje)) {
+            if (dataPagamento.isBefore(hoje) && lancamentoCrediario.getStatusVenda().equals(EStatusVenda.ANDAMENTO)) {
                 lancamentoCrediario.setStatusVenda(EStatusVenda.ATRASADO);
 
                 this.lancamentoCrediarioRepository.save(lancamentoCrediario);
