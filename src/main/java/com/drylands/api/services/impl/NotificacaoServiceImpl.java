@@ -14,7 +14,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -39,6 +41,16 @@ public class NotificacaoServiceImpl implements NotificacaoService {
     }
 
     @Override
+    @Transactional
+    public Notificacao criarNotificacao(NotificacaoDTO notificacaoDto) {
+        Notificacao notificacao = modelMapper.map(notificacaoDto, Notificacao.class);
+
+        UtilidadesData.configurarDatasComFusoHorarioBrasileiro(notificacao);
+
+        return this.notificacaoRepository.save(notificacao);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public ListagemNotificacaoDTO listarNotificacoes(String filter, boolean lido, Pageable pageable) {
         ListagemNotificacaoDTO listagemClientesPage = new ListagemNotificacaoDTO();
@@ -46,10 +58,10 @@ public class NotificacaoServiceImpl implements NotificacaoService {
 
         Page<Notificacao> page;
 
-        if (Objects.nonNull(filter)) {
+        if (StringUtils.hasText(filter)) {
             page =  this.notificacaoRepository.listarNotificacoesComFiltrosEPaginado(lido, filter, pageable);
         } else {
-            page = this.notificacaoRepository.findAll(pageable);
+            page = this.notificacaoRepository.listarNotificacoesComFiltrosEPaginado(lido, pageable);
         }
 
         page.getContent().forEach(notificacao -> {
@@ -75,5 +87,11 @@ public class NotificacaoServiceImpl implements NotificacaoService {
         UtilidadesData.configurarDatasComFusoHorarioBrasileiroParaAtualizar(notificacao.get());
 
         return this.notificacaoRepository.save(notificacao.get());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public BigInteger contagemDeNotificacoesNaoLidas() {
+        return this.notificacaoRepository.contagemDeNotificacoesNaoLidas();
     }
 }
