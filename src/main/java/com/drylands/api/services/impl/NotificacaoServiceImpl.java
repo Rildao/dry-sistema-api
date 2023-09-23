@@ -19,7 +19,6 @@ import org.springframework.util.StringUtils;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -85,6 +84,8 @@ public class NotificacaoServiceImpl implements NotificacaoService {
         if (notificacao.isEmpty()) throw new NotFoundException("Notificação não não encontrada.");
 
         UtilidadesData.configurarDatasComFusoHorarioBrasileiroParaAtualizar(notificacao.get());
+
+        notificacao.get().setLido(Boolean.TRUE);
 
         return this.notificacaoRepository.save(notificacao.get());
     }
