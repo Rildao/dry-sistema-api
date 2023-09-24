@@ -2,13 +2,16 @@ package com.drylands.api.services.impl;
 
 import com.drylands.api.infrastructure.repositories.ClienteRepository;
 import com.drylands.api.infrastructure.repositories.VendaRepository;
+import com.drylands.api.rest.dtos.response.IndicadorMesDTO;
 import com.drylands.api.rest.dtos.response.PainelAdministrativoDTO;
 import com.drylands.api.services.PainelAdministrativo;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Objects;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class PainelAdministrativoServiceImpl implements PainelAdministrativo {
@@ -26,6 +29,7 @@ public class PainelAdministrativoServiceImpl implements PainelAdministrativo {
         PainelAdministrativoDTO painelAdministrativoDto = new PainelAdministrativoDTO();
 
         this.metricasMensais(painelAdministrativoDto);
+        this.criarIndicadores(painelAdministrativoDto);
 
         return painelAdministrativoDto;
     }
@@ -46,5 +50,84 @@ public class PainelAdministrativoServiceImpl implements PainelAdministrativo {
         painelAdministrativoDto.setTotalValorDinheiro(Objects.nonNull(totalValorDinheiro) ? totalValorDinheiro : BigDecimal.ZERO);
 
         return painelAdministrativoDto;
+    }
+
+    private void criarIndicadores(PainelAdministrativoDTO painelAdministrativoDto) {
+        LocalDate dataFinal = LocalDate.now();
+        LocalDate dataInicio = dataFinal.minusMonths(12);
+
+        this.montarIndicadorVenda(painelAdministrativoDto, dataFinal, dataInicio);
+        this.montarIndicadorCliente(painelAdministrativoDto, dataFinal, dataInicio);
+    }
+
+    private void montarIndicadorVenda(PainelAdministrativoDTO painelAdministrativoDto, LocalDate dataFinal, LocalDate dataInicio) {
+        List<IndicadorMesDTO> indicadorVendasLista = new ArrayList<>();
+
+        List<Object[]> totalVendasObjetos = this.vendaRepository.contagemDeVendasPorMes(dataInicio.toString(), dataFinal.toString());
+
+        List<IndicadorMesDTO> indicadorVendasListaDto = this.montarDtoIndicadores(dataFinal, dataInicio, indicadorVendasLista, totalVendasObjetos);
+
+        painelAdministrativoDto.setIndicadorVendasPorMes(indicadorVendasListaDto);
+    }
+
+    private void montarIndicadorCliente(PainelAdministrativoDTO painelAdministrativoDto, LocalDate dataFinal, LocalDate dataInicio) {
+        List<IndicadorMesDTO> indicadorVendasLista = new ArrayList<>();
+
+        List<Object[]> totalVendasObjetos = this.clienteRepository.contagemDeClientesPorMes(dataInicio.toString(), dataFinal.toString());
+
+        List<IndicadorMesDTO> indicadorClientesListaDto = this.montarDtoIndicadores(dataFinal, dataInicio, indicadorVendasLista, totalVendasObjetos);
+
+        painelAdministrativoDto.setIndicadorClientesPorMes(indicadorClientesListaDto);
+    }
+
+    private List<IndicadorMesDTO> montarDtoIndicadores(LocalDate dataFinal, LocalDate dataInicio, List<IndicadorMesDTO> indicadorLista, List<Object[]> totalClientesObjetos ) {
+
+        Map<Integer, Map<Integer, IndicadorMesDTO>> vendasPorMesMap = new HashMap<>();
+        totalClientesObjetos.forEach(objeto -> {
+            IndicadorMesDTO indicadorVendaDto = new IndicadorMesDTO();
+
+            BigDecimal anoParaConverter = (BigDecimal) objeto[0];
+            BigDecimal mesParaConverter = (BigDecimal) objeto[1];
+
+            Integer ano = anoParaConverter.intValue();
+            Integer mes = mesParaConverter.intValue();
+
+            indicadorVendaDto.setAno(ano);
+            indicadorVendaDto.setMes(mes);
+            indicadorVendaDto.setTotal(Double.valueOf(objeto[2].toString()));
+
+            vendasPorMesMap.computeIfAbsent(ano, k -> new HashMap<>()).put(mes, indicadorVendaDto);
+            indicadorLista.add(indicadorVendaDto);
+        });
+
+        int inicioAno = dataInicio.getYear();
+        int finalAno = dataFinal.getYear();
+
+        for (int ano = inicioAno; ano <= finalAno; ano++) {
+            final Integer finalAnoInteravel = ano;
+
+            int inicioMes = (ano == inicioAno) ? dataInicio.getMonthValue() : 1;
+            int finalMes = (ano == finalAno) ? dataFinal.getMonthValue() : 12;
+            for (int mes = inicioMes; mes <= finalMes; mes++) {
+                final Integer finalMesInteravel = mes;
+
+                vendasPorMesMap.computeIfAbsent(finalAnoInteravel, k -> new HashMap<>()).computeIfAbsent(finalMesInteravel, k -> {
+                    IndicadorMesDTO dtoMesVazio = new IndicadorMesDTO();
+                    dtoMesVazio.setAno(finalAnoInteravel);
+                    dtoMesVazio.setMes(finalMesInteravel);
+                    dtoMesVazio.setTotal(Double.valueOf(0));
+
+                    return dtoMesVazio;
+                });
+            }
+        }
+
+        for (Map.Entry<Integer, Map<Integer, IndicadorMesDTO>> entry : vendasPorMesMap.entrySet()) {
+            indicadorLista.addAll(entry.getValue().values());
+        }
+
+        indicadorLista.sort(IndicadorMesDTO::compareTo);
+        List<IndicadorMesDTO> indicadorVendasListaDto = indicadorLista.stream().distinct().collect(Collectors.toList());
+        return indicadorVendasListaDto;
     }
 }
