@@ -17,7 +17,9 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long> {
     Optional<Cliente> findByCpf(String cpf);
     @Query(value = "SELECT c FROM Cliente c " +
             " WHERE c.nome ILIKE CONCAT('%', :filter ,'%') " +
-            " OR c.cpf LIKE CONCAT('%', :filter ,'%') ")
+            " OR c.cpf LIKE CONCAT('%', :filter ,'%')" +
+            " OR c.telefone LIKE CONCAT('%', :filter ,'%') " +
+            " OR c.endereco LIKE CONCAT('%', :filter ,'%')")
     Page<Cliente> findAllByFilters(Pageable pageable, String filter);
 
     @Query(value = "SELECT COUNT(c) FROM Cliente c WHERE MONTH(c.dataCriacao) = MONTH(CURRENT_DATE) AND YEAR(c.dataCriacao) = YEAR(CURRENT_DATE)")
