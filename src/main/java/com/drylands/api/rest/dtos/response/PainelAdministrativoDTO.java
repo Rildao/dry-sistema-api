@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.List;
 
 @Getter
 @Setter
@@ -15,4 +16,6 @@ public class PainelAdministrativoDTO {
     BigDecimal totalValorPix;
     BigDecimal totalValorCartao;
     BigDecimal totalValorDinheiro;
+    List<IndicadorMesDTO> indicadorVendasPorMes;
+    List<IndicadorMesDTO> indicadorClientesPorMes;
 }
