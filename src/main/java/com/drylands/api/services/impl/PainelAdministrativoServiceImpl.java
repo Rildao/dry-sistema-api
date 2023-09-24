@@ -86,8 +86,8 @@ public class PainelAdministrativoServiceImpl implements PainelAdministrativo {
         totalClientesObjetos.forEach(objeto -> {
             IndicadorMesDTO indicadorVendaDto = new IndicadorMesDTO();
 
-            BigDecimal anoParaConverter = (BigDecimal) objeto[0];
-            BigDecimal mesParaConverter = (BigDecimal) objeto[1];
+            Double anoParaConverter = (Double) objeto[0];
+            Double mesParaConverter = (Double) objeto[1];
 
             Integer ano = anoParaConverter.intValue();
             Integer mes = mesParaConverter.intValue();
