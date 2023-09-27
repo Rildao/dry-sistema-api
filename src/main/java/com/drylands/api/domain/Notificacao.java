@@ -1,5 +1,6 @@
 package com.drylands.api.domain;
 
+import com.drylands.api.domain.enums.ETipoNotificacao;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,4 +25,7 @@ public class Notificacao extends EntidadeAbstrata {
 
     @Column(name = "lido", nullable = false)
     private Boolean lido;
+
+    @Column(name = "tipo_notificacao")
+    ETipoNotificacao tipoNotificacao;
 }

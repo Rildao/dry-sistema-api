@@ -8,6 +8,7 @@ import com.drylands.api.infrastructure.repositories.VendaRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -26,6 +27,7 @@ public class VendasJobs {
     }
 
     @Scheduled(cron = "0 0 5 * * *")
+    @Transactional
     public void verificarLancamentosCrediarioEmAtraso() {
         log.warn("JOB: verificar lançamentos em atraso");
 
@@ -46,6 +48,7 @@ public class VendasJobs {
     }
 
     @Scheduled(cron = "0 0 6 * * *")
+    @Transactional
     public void verificarStatusDaVenda() {
         log.warn("JOB: verificar vendas em atraso");
 

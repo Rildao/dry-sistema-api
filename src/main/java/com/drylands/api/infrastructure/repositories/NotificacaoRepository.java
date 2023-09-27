@@ -5,9 +5,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
+import java.time.LocalDate;
 
 @Repository
 public interface NotificacaoRepository extends JpaRepository<Notificacao, Long> {
@@ -28,4 +30,12 @@ public interface NotificacaoRepository extends JpaRepository<Notificacao, Long> 
 
     @Query(value = " SELECT COUNT(n) FROM Notificacao n WHERE n.lido = FALSE ")
     BigInteger contagemDeNotificacoesNaoLidas();
+
+    @Query(value = "SELECT n FROM notificacao n " +
+            "INNER JOIN venda v ON v.id = n.venda_id " +
+            "INNER JOIN lancamento_crediario lc ON lc.venda_id = v.id " +
+            "WHERE v.id = :id " +
+            "AND n.tipo_notificacao = 0 " +
+            "AND lc.data_pagamento = :dataPagamento", nativeQuery = true)
+    Object findFirstByVendaIdAndTipoNotificacaoIsAtraso(@Param("id") Long id, @Param("dataPagamento") LocalDate dataPagamento);
 }
