@@ -90,7 +90,7 @@ public class NotificacaoJobs {
 
                 notificacao.setMensagem(MENSAGEM_ALERTA.replace("{data}", data).replace("{cliente}", lancamento.getVenda().getCliente().getNome()));
                 notificacao.setLido(Boolean.FALSE);
-                notificacao.setTipoNotificacao(ETipoNotificacao.ATRASO);
+                notificacao.setTipoNotificacao(ETipoNotificacao.ALERTA);
                 notificacao.setVenda(lancamento.getVenda());
                 UtilidadesData.configurarDatasComFusoHorarioBrasileiro(notificacao);
 

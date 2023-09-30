@@ -1,6 +1,7 @@
 package com.drylands.api.rest.dtos.notificacao;
 
 import com.drylands.api.domain.Venda;
+import com.drylands.api.domain.enums.ETipoNotificacao;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,6 +18,8 @@ public class NotificacaoDTO {
     private String mensagem;
 
     private Boolean lido;
+
+    private ETipoNotificacao tipoNotificacao;
 
     private Date dataCriacao;
 
