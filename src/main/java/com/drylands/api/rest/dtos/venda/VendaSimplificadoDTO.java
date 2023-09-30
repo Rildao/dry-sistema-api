@@ -1,6 +1,5 @@
 package com.drylands.api.rest.dtos.venda;
 
-import com.drylands.api.domain.enums.EStatusVenda;
 import com.drylands.api.domain.enums.ETipoVenda;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,7 +19,7 @@ public class VendaSimplificadoDTO {
 
     private float valorVenda;
 
-    private EStatusVenda statusVenda;
+    private String statusVenda;
 
     private LocalDate dataVenda;
 

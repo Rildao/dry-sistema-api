@@ -38,10 +38,10 @@ public class VendaServiceImpl implements VendaService {
     @Transactional
     public Venda criarVenda(VendaDTO vendaDto) {
 
+        vendaDto.setStatusVenda(EStatusVenda.ANDAMENTO.toString());
+
         Venda novaVenda = modelMapper.map(vendaDto, Venda.class);
 
-        vendaDto.setStatusVenda(EStatusVenda.ANDAMENTO);
-        
         novaVenda = this.vendaRepository.save(novaVenda);
 
         this.lancamentoCrediarioService.gerandoLancamentosParaCrediario(novaVenda);
@@ -95,7 +95,7 @@ public class VendaServiceImpl implements VendaService {
                                                 List<VendaDTO> listaDeVendas,
                                                 Pageable pageable) {
 
-        Page<Venda> page = this.vendaRepository.findAll(pageable);
+        Page<Venda> page = this.vendaRepository.findAllByOrderByDataVendaDesc(pageable);
 
         page.getContent().forEach(venda -> {
             VendaDTO vendaDto = modelMapper.map(venda, VendaDTO.class);
