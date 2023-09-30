@@ -28,21 +28,11 @@ public interface VendaRepository extends JpaRepository<Venda, Long> {
     @Query(value = "SELECT v FROM Venda v WHERE v.tipoVenda = CREDIARIO")
     List<Venda> findAllByTypeSaleCredit();
 
-    @Query("SELECT COUNT(v) FROM Venda v WHERE MONTH(v.dataVenda) = MONTH(CURRENT_DATE) AND YEAR(v.dataVenda) = YEAR(CURRENT_DATE)")
+    @Query("SELECT COUNT(v) FROM Venda v ")
     BigInteger totalVendasRealizadas();
 
-    @Query("SELECT SUM(v.valorVenda) FROM Venda v WHERE MONTH(v.dataVenda) = MONTH(CURRENT_DATE) AND YEAR(v.dataVenda) = YEAR(CURRENT_DATE) AND  v.tipoVenda = CREDIARIO")
-    BigDecimal valorTotalDeVendasRealizadasNoCrediario();
-
-    @Query("SELECT SUM(v.valorVenda) FROM Venda v WHERE MONTH(v.dataVenda) = MONTH(CURRENT_DATE) AND YEAR(v.dataVenda) = YEAR(CURRENT_DATE) AND  v.tipoVenda = PIX")
-    BigDecimal valorTotalDeVendasRealizadasNoPix();
-
-    @Query("SELECT SUM(v.valorVenda) FROM Venda v WHERE MONTH(v.dataVenda) = MONTH(CURRENT_DATE) AND YEAR(v.dataVenda) = YEAR(CURRENT_DATE) AND  v.tipoVenda = CARTAO_CREDITO")
-    BigDecimal valorTotalDeVendasRealizadasNoCartao();
-
-    @Query("SELECT SUM(v.valorVenda) FROM Venda v WHERE MONTH(v.dataVenda) = MONTH(CURRENT_DATE) AND YEAR(v.dataVenda) = YEAR(CURRENT_DATE) AND  v.tipoVenda = DINHEIRO")
-    BigDecimal valorTotalDeVendasRealizadasNoDinheiro();
-
+    @Query("SELECT SUM(v.valorVenda) FROM Venda v ")
+    BigDecimal valorTotalFaturado();
 
     @Query(value = "SELECT EXTRACT(YEAR FROM v.data_venda) AS ano, " +
             "EXTRACT(MONTH FROM v.data_venda) AS mes, " +
