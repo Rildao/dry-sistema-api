@@ -14,11 +14,13 @@ import java.util.List;
 
 @Repository
 public interface VendaRepository extends JpaRepository<Venda, Long> {
+    Page<Venda> findAllByOrderByDataVendaDesc(Pageable pageable);
+
     Page<Venda> findAllByClienteId(Long id, Pageable pageable);
 
     @Query(value = "SELECT venda FROM Venda venda " +
             "INNER JOIN venda.cliente c " +
-            "WHERE c.id = ?1 ORDER BY venda.dataCriacao DESC")
+            "WHERE c.id = ?1 ORDER BY venda.dataVenda DESC")
     List<Venda> findAllByClienteIdAndDataCriacaoOrderByDesc(Long id);
 
     void deleteByClienteId(Long id);

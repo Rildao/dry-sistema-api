@@ -207,7 +207,7 @@ public class ClienteServiceImpl implements ClienteService {
             if(Objects.nonNull(vendaDto.getId())) {
                 Venda venda = this.vendaRepository.findById(vendaDto.getId()).get();
                 venda.setValorVenda(vendaDto.getValorVenda());
-                venda.setStatusVenda(vendaDto.getStatusVenda());
+                venda.setStatusVenda(EStatusVenda.valueOf(vendaDto.getStatusVenda()));
                 venda.setDiaVencimentoLancamento(vendaDto.getDiaVencimentoLancamento());
                 venda.setTipoVenda(vendaDto.getTipoVenda());
                 venda.setQuantidadeParcelas(vendaDto.getQuantidadeParcelas());
@@ -220,7 +220,7 @@ public class ClienteServiceImpl implements ClienteService {
             } else {
                 Venda venda = modelMapper.map(vendaDto, Venda.class);
                 UtilidadesData.configurarDatasComFusoHorarioBrasileiro(venda);
-                if (Objects.equals(vendaDto.getTipoVenda(), ETipoVenda.CREDIARIO)) vendaDto.setStatusVenda(EStatusVenda.ANDAMENTO);
+                if (Objects.equals(vendaDto.getTipoVenda(), ETipoVenda.CREDIARIO)) venda.setStatusVenda(EStatusVenda.ANDAMENTO);
 
                 venda.setCliente(cliente);
                 vendas.add(venda);
