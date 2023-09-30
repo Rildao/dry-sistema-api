@@ -22,7 +22,7 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long> {
             " OR c.endereco LIKE CONCAT('%', :filter ,'%')")
     Page<Cliente> findAllByFilters(Pageable pageable, String filter);
 
-    @Query(value = "SELECT COUNT(c) FROM Cliente c WHERE MONTH(c.dataCriacao) = MONTH(CURRENT_DATE) AND YEAR(c.dataCriacao) = YEAR(CURRENT_DATE)")
+    @Query(value = "SELECT COUNT(c) FROM Cliente c ")
     BigInteger totalDeClientes();
 
     @Query(value = "SELECT EXTRACT(YEAR FROM c.data_criacao) AS ano, " +
