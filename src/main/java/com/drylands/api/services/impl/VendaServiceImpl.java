@@ -2,6 +2,7 @@ package com.drylands.api.services.impl;
 
 import com.drylands.api.domain.Venda;
 import com.drylands.api.domain.enums.EStatusVenda;
+import com.drylands.api.domain.enums.ETipoVenda;
 import com.drylands.api.infrastructure.exceptions.NotFoundException;
 import com.drylands.api.infrastructure.repositories.VendaRepository;
 import com.drylands.api.rest.dtos.venda.ListagemVendaDTO;
@@ -38,7 +39,11 @@ public class VendaServiceImpl implements VendaService {
     @Transactional
     public Venda criarVenda(VendaDTO vendaDto) {
 
-        vendaDto.setStatusVenda(EStatusVenda.ANDAMENTO.toString());
+        if (ETipoVenda.PIX.equals(vendaDto.getTipoVenda()) || ETipoVenda.CARTAO_CREDITO.equals(vendaDto.getTipoVenda()) || ETipoVenda.DINHEIRO.equals(vendaDto.getTipoVenda())) {
+            vendaDto.setStatusVenda(EStatusVenda.PAGO.toString());
+        } else {
+            vendaDto.setStatusVenda(EStatusVenda.ANDAMENTO.toString());
+        }
 
         Venda novaVenda = modelMapper.map(vendaDto, Venda.class);
 
