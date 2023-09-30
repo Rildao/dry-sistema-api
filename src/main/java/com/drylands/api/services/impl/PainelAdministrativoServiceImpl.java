@@ -38,17 +38,11 @@ public class PainelAdministrativoServiceImpl implements PainelAdministrativo {
     private PainelAdministrativoDTO metricasMensais(PainelAdministrativoDTO painelAdministrativoDto) {
         BigInteger totalClientes = this.clienteRepository.totalDeClientes();
         BigInteger totalVendasRealizadas = this.vendaRepository.totalVendasRealizadas();
-        BigDecimal totalValorCrediario = this.vendaRepository.valorTotalDeVendasRealizadasNoCrediario();
-        BigDecimal totalValorPix = this.vendaRepository.valorTotalDeVendasRealizadasNoPix();
-        BigDecimal totalValorCartao = this.vendaRepository.valorTotalDeVendasRealizadasNoCartao();
-        BigDecimal totalValorDinheiro = this.vendaRepository.valorTotalDeVendasRealizadasNoDinheiro();
+        BigDecimal totalValorFaturado = this.vendaRepository.valorTotalFaturado();
 
         painelAdministrativoDto.setTotalClientes(Objects.nonNull(totalClientes) ? totalClientes : BigInteger.ZERO);
         painelAdministrativoDto.setTotalVendas(Objects.nonNull(totalVendasRealizadas) ? totalVendasRealizadas : BigInteger.ZERO);
-        painelAdministrativoDto.setTotalValorCrediario(Objects.nonNull(totalValorCrediario) ? totalValorCrediario : BigDecimal.ZERO);
-        painelAdministrativoDto.setTotalValorPix(Objects.nonNull(totalValorPix) ? totalValorPix : BigDecimal.ZERO);
-        painelAdministrativoDto.setTotalValorCartao(Objects.nonNull(totalValorCartao) ? totalValorCartao : BigDecimal.ZERO);
-        painelAdministrativoDto.setTotalValorDinheiro(Objects.nonNull(totalValorDinheiro) ? totalValorDinheiro : BigDecimal.ZERO);
+        painelAdministrativoDto.setTotalValorFaturado(Objects.nonNull(totalValorFaturado) ? totalValorFaturado : BigDecimal.ZERO);
 
         return painelAdministrativoDto;
     }
