@@ -220,7 +220,12 @@ public class ClienteServiceImpl implements ClienteService {
             } else {
                 Venda venda = modelMapper.map(vendaDto, Venda.class);
                 UtilidadesData.configurarDatasComFusoHorarioBrasileiro(venda);
-                if (Objects.equals(vendaDto.getTipoVenda(), ETipoVenda.CREDIARIO)) venda.setStatusVenda(EStatusVenda.ANDAMENTO);
+
+                if (ETipoVenda.PIX.equals(vendaDto.getTipoVenda()) || ETipoVenda.CARTAO_CREDITO.equals(vendaDto.getTipoVenda()) || ETipoVenda.DINHEIRO.equals(vendaDto.getTipoVenda())) {
+                    vendaDto.setStatusVenda(EStatusVenda.PAGO.toString());
+                } else {
+                    vendaDto.setStatusVenda(EStatusVenda.ANDAMENTO.toString());
+                }
 
                 venda.setCliente(cliente);
                 vendas.add(venda);
