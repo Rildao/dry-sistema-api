@@ -13,7 +13,7 @@ public class PainelAdministrativoDTO {
     BigInteger totalClientes;
     BigInteger totalVendas;
     BigDecimal totalValorFaturado;
-    List<IndicadorMesDTO> indicadorVendasPorMes;
+    IndicadoresVendasPorMesDTO indicadoresVendasPorMes;
+    IndicadoresVendasPorMesDTO indicadoresTotalFaturadoPorMes;
     List<IndicadorMesDTO> indicadorClientesPorMes;
-    List<IndicadorMesDTO> indicadorTotalFaturadoPorMes;
 }
