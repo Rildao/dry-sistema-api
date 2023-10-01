@@ -9,6 +9,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,8 +24,8 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long> {
             " OR c.endereco LIKE CONCAT('%', :filter ,'%')")
     Page<Cliente> findAllByFilters(Pageable pageable, String filter);
 
-    @Query(value = "SELECT COUNT(c) FROM Cliente c ")
-    BigInteger totalDeClientes();
+    @Query(value = "SELECT COUNT(c) FROM Cliente c WHERE c.dataCriacao BETWEEN ?1 AND ?2")
+    BigInteger totalDeClientes(Date dataInicio, Date dataFinal);
 
     @Query(value = "SELECT EXTRACT(YEAR FROM c.data_criacao) AS ano, " +
             "EXTRACT(MONTH FROM c.data_criacao) AS mes, " +
