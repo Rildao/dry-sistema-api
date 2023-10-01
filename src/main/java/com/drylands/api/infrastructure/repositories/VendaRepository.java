@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -28,11 +29,11 @@ public interface VendaRepository extends JpaRepository<Venda, Long> {
     @Query(value = "SELECT v FROM Venda v WHERE v.tipoVenda = CREDIARIO")
     List<Venda> findAllByTypeSaleCredit();
 
-    @Query("SELECT COUNT(v) FROM Venda v ")
-    BigInteger totalVendasRealizadas();
+    @Query("SELECT COUNT(v) FROM Venda v WHERE v.dataVenda BETWEEN ?1 AND ?2")
+    BigInteger totalVendasRealizadas(LocalDate dataInicio, LocalDate dataFinal);
 
-    @Query("SELECT SUM(v.valorVenda) FROM Venda v ")
-    BigDecimal valorTotalFaturado();
+    @Query("SELECT SUM(v.valorVenda) FROM Venda v WHERE v.dataVenda BETWEEN ?1 AND ?2")
+    BigDecimal valorTotalFaturado(LocalDate dataInicio, LocalDate dataFinal);
 
     @Query(value = "SELECT EXTRACT(YEAR FROM v.data_venda) AS ano, " +
             "EXTRACT(MONTH FROM v.data_venda) AS mes, " +

@@ -11,7 +11,9 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -30,16 +32,22 @@ public class PainelAdministrativoServiceImpl implements PainelAdministrativo {
     public PainelAdministrativoDTO informacoesPainelAdministrativo(ETipoVenda tipoVenda) {
         PainelAdministrativoDTO painelAdministrativoDto = new PainelAdministrativoDTO();
 
-        this.metricasMensais(painelAdministrativoDto);
-        this.criarIndicadores(painelAdministrativoDto, tipoVenda);
+        LocalDate dataFinal = LocalDate.now();
+        LocalDate dataInicio = dataFinal.minusMonths(12);
+
+        this.metricasMensais(painelAdministrativoDto, dataInicio, dataFinal);
+        this.criarIndicadores(painelAdministrativoDto, tipoVenda, dataInicio, dataFinal);
 
         return painelAdministrativoDto;
     }
 
-    private PainelAdministrativoDTO metricasMensais(PainelAdministrativoDTO painelAdministrativoDto) {
-        BigInteger totalClientes = this.clienteRepository.totalDeClientes();
-        BigInteger totalVendasRealizadas = this.vendaRepository.totalVendasRealizadas();
-        BigDecimal totalValorFaturado = this.vendaRepository.valorTotalFaturado();
+    private PainelAdministrativoDTO metricasMensais(PainelAdministrativoDTO painelAdministrativoDto, LocalDate dataInicio,  LocalDate dataFinal) {
+        Date inicioEmDate = Date.from(dataInicio.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+        Date finalEmDate =  Date.from(dataFinal.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+
+        BigInteger totalClientes = this.clienteRepository.totalDeClientes(inicioEmDate, finalEmDate);
+        BigInteger totalVendasRealizadas = this.vendaRepository.totalVendasRealizadas(dataInicio, dataFinal);
+        BigDecimal totalValorFaturado = this.vendaRepository.valorTotalFaturado(dataInicio, dataFinal);
 
         painelAdministrativoDto.setTotalClientes(Objects.nonNull(totalClientes) ? totalClientes : BigInteger.ZERO);
         painelAdministrativoDto.setTotalVendas(Objects.nonNull(totalVendasRealizadas) ? totalVendasRealizadas : BigInteger.ZERO);
@@ -48,10 +56,7 @@ public class PainelAdministrativoServiceImpl implements PainelAdministrativo {
         return painelAdministrativoDto;
     }
 
-    private void criarIndicadores(PainelAdministrativoDTO painelAdministrativoDto, ETipoVenda tipoVenda) {
-        LocalDate dataFinal = LocalDate.now();
-        LocalDate dataInicio = dataFinal.minusMonths(12);
-
+    private void criarIndicadores(PainelAdministrativoDTO painelAdministrativoDto, ETipoVenda tipoVenda, LocalDate dataInicio,  LocalDate dataFinal) {
         this.montarIndicadorVenda(painelAdministrativoDto, dataFinal, dataInicio, tipoVenda);
         this.montarIndicadorCliente(painelAdministrativoDto, dataFinal, dataInicio);
         this.montarFaturamentoVenda(painelAdministrativoDto, dataFinal, dataInicio, tipoVenda);
