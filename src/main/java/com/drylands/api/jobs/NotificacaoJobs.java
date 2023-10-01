@@ -55,7 +55,7 @@ public class NotificacaoJobs {
             if(Objects.isNull(notificacao)) {
                 Notificacao novaNotificacao = new Notificacao();
 
-                DateTimeFormatter formatador = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+                DateTimeFormatter formatador = DateTimeFormatter.ofPattern("MM/dd/yyyy");
                 String data = lancamento.getDataPagamento().format(formatador);
 
                 novaNotificacao.setMensagem(MENSAGEM_ATRASO.replace("{data}", data).replace("{cliente}", lancamento.getVenda().getCliente().getNome()));
@@ -85,7 +85,7 @@ public class NotificacaoJobs {
             if (hoje.equals(dataPagamento.minusDays(1)) && lancamento.getStatusVenda().equals(EStatusVenda.ANDAMENTO)) {
                 Notificacao notificacao = new Notificacao();
 
-                DateTimeFormatter formatador = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+                DateTimeFormatter formatador = DateTimeFormatter.ofPattern("MM/dd/yyyy");
                 String data = lancamento.getDataPagamento().format(formatador);
 
                 notificacao.setMensagem(MENSAGEM_ALERTA.replace("{data}", data).replace("{cliente}", lancamento.getVenda().getCliente().getNome()));
