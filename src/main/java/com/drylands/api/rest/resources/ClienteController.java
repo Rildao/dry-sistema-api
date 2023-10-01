@@ -1,5 +1,6 @@
 package com.drylands.api.rest.resources;
 
+import com.drylands.api.rest.dtos.cliente.ClienteCsvDTO;
 import com.drylands.api.rest.dtos.cliente.ClienteDTO;
 import com.drylands.api.rest.dtos.cliente.ClienteVendasDTO;
 import com.drylands.api.rest.dtos.cliente.ListagemClienteDTO;
@@ -11,6 +12,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/cliente")
@@ -52,6 +55,12 @@ public class ClienteController extends AbstractController {
     public ResponseEntity<ListagemClienteDTO> listarClientes(Pageable pageable,
                                                              @RequestParam(value = "filter", required = false) String filter) {
         return new ResponseEntity<>(this.clienteService.listarClientes(pageable, filter), HttpStatus.OK);
+    }
+
+    @GetMapping("/csv")
+    @Operation(tags = "Cliente", summary = "Listar todos os clientes")
+    public ResponseEntity<List<ClienteCsvDTO>> listarClientesSemPaginacao() {
+        return new ResponseEntity<>(this.clienteService.listarClientesSemPaginacao(), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

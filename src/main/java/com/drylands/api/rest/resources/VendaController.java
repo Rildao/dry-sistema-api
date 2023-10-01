@@ -2,6 +2,7 @@ package com.drylands.api.rest.resources;
 
 import com.drylands.api.rest.dtos.response.ApiResponseDTO;
 import com.drylands.api.rest.dtos.venda.ListagemVendaDTO;
+import com.drylands.api.rest.dtos.venda.VendaCsvDTO;
 import com.drylands.api.rest.dtos.venda.VendaDTO;
 import com.drylands.api.services.VendaService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,6 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/venda")
@@ -44,6 +47,12 @@ public class VendaController extends AbstractController {
     @Operation(tags = "Venda", summary = "Listar todas as vendas com paginação e filtro")
     public ResponseEntity<ListagemVendaDTO> listarVendas(@RequestParam(name = "clientId", required = false) Long clienteId, Pageable pageable) {
         return new ResponseEntity<>(this.vendaService.listarVendas(clienteId, pageable), HttpStatus.OK);
+    }
+
+    @GetMapping("/csv")
+    @Operation(tags = "Venda", summary = "Listar todas as vendas")
+    public ResponseEntity<List<VendaCsvDTO>> listarVendasSemPaginacao() {
+        return new ResponseEntity<>(this.vendaService.listarVendasSemPaginacao(), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

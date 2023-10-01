@@ -6,6 +6,7 @@ import com.drylands.api.domain.enums.ETipoVenda;
 import com.drylands.api.infrastructure.exceptions.NotFoundException;
 import com.drylands.api.infrastructure.repositories.VendaRepository;
 import com.drylands.api.rest.dtos.venda.ListagemVendaDTO;
+import com.drylands.api.rest.dtos.venda.VendaCsvDTO;
 import com.drylands.api.rest.dtos.venda.VendaDTO;
 import com.drylands.api.services.LancamentoCrediarioService;
 import com.drylands.api.services.VendaService;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class VendaServiceImpl implements VendaService {
@@ -94,6 +96,11 @@ public class VendaServiceImpl implements VendaService {
         }
 
         return listagemVendaPage;
+    }
+
+    @Override
+    public List<VendaCsvDTO> listarVendasSemPaginacao() {
+        return this.vendaRepository.findAll().stream().map(venda -> modelMapper.map(venda, VendaCsvDTO.class)).collect(Collectors.toList());
     }
 
     public ListagemVendaDTO listarTodasAsVendas(ListagemVendaDTO ListagemVendaPage,

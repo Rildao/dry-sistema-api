@@ -9,6 +9,7 @@ import com.drylands.api.infrastructure.exceptions.BadRequestException;
 import com.drylands.api.infrastructure.exceptions.NotFoundException;
 import com.drylands.api.infrastructure.repositories.ClienteRepository;
 import com.drylands.api.infrastructure.repositories.VendaRepository;
+import com.drylands.api.rest.dtos.cliente.ClienteCsvDTO;
 import com.drylands.api.rest.dtos.cliente.ClienteDTO;
 import com.drylands.api.rest.dtos.cliente.ClienteVendasDTO;
 import com.drylands.api.rest.dtos.cliente.ListagemClienteDTO;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ClienteServiceImpl implements ClienteService {
@@ -154,6 +156,11 @@ public class ClienteServiceImpl implements ClienteService {
         listagemClientesPage.setSize(page.getSize());
 
         return listagemClientesPage;
+    }
+
+    @Override
+    public List<ClienteCsvDTO> listarClientesSemPaginacao() {
+        return this.clienteRepository.findAll().stream().map(cliente -> modelMapper.map(cliente, ClienteCsvDTO.class)).collect(Collectors.toList());
     }
 
     @Override
