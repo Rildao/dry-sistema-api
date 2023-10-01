@@ -4,6 +4,7 @@ import com.drylands.api.domain.enums.ETipoVenda;
 import com.drylands.api.infrastructure.repositories.ClienteRepository;
 import com.drylands.api.infrastructure.repositories.VendaRepository;
 import com.drylands.api.rest.dtos.response.IndicadorMesDTO;
+import com.drylands.api.rest.dtos.response.IndicadoresVendasPorMesDTO;
 import com.drylands.api.rest.dtos.response.PainelAdministrativoDTO;
 import com.drylands.api.services.PainelAdministrativo;
 import org.springframework.stereotype.Service;
@@ -60,35 +61,51 @@ public class PainelAdministrativoServiceImpl implements PainelAdministrativo {
                                         LocalDate dataFinal,
                                         LocalDate dataInicio,
                                         ETipoVenda tipoVenda) {
-        List<IndicadorMesDTO> indicadorVendasLista = new ArrayList<>();
 
-        List<Object[]> totalVendasObjetos;
+        IndicadoresVendasPorMesDTO indicadoresFaturadoPorMesDto = new IndicadoresVendasPorMesDTO();
 
-        if (Objects.nonNull(tipoVenda)) {
-            totalVendasObjetos = this.vendaRepository.somatorioDeVendasPorMesPorVenda(dataInicio.toString(), dataFinal.toString(), tipoVenda.ordinal());
-        } else {
-            totalVendasObjetos = this.vendaRepository.somatorioDeVendasPorMes(dataInicio.toString(), dataFinal.toString());
-        }
+        List<Object[]> totalFaturadoCrediarioObjetos = this.vendaRepository.somatorioDeVendasPorMesPorVenda(dataInicio.toString(), dataFinal.toString(), ETipoVenda.CREDIARIO.ordinal());
+        List<IndicadorMesDTO> indicadorFaturadoPorMesCrediario = this.montarDtoIndicadores(dataFinal, dataInicio, totalFaturadoCrediarioObjetos);
 
-        List<IndicadorMesDTO> indicadorFaturamentoListaDto = this.montarDtoIndicadores(dataFinal, dataInicio, indicadorVendasLista, totalVendasObjetos);
+        List<Object[]> totalFaturadoCartaoDeCreditoObjetos = this.vendaRepository.somatorioDeVendasPorMesPorVenda(dataInicio.toString(), dataFinal.toString(), ETipoVenda.CARTAO_CREDITO.ordinal());
+        List<IndicadorMesDTO> indicadorFaturadoPorMesCartaoDeCredito = this.montarDtoIndicadores(dataFinal, dataInicio, totalFaturadoCartaoDeCreditoObjetos);
 
-        painelAdministrativoDto.setIndicadorTotalFaturadoPorMes(indicadorFaturamentoListaDto);
+        List<Object[]> totalVFaturadoPixObjetos = this.vendaRepository.somatorioDeVendasPorMesPorVenda(dataInicio.toString(), dataFinal.toString(), ETipoVenda.PIX.ordinal());
+        List<IndicadorMesDTO> indicadorFaturadoPorMesPix = this.montarDtoIndicadores(dataFinal, dataInicio, totalVFaturadoPixObjetos);
+
+        List<Object[]> totalFaturadoDinheiroObjetos = this.vendaRepository.somatorioDeVendasPorMesPorVenda(dataInicio.toString(), dataFinal.toString(), ETipoVenda.DINHEIRO.ordinal());
+        List<IndicadorMesDTO> indicadorFaturadoPorMesDinheiro = this.montarDtoIndicadores(dataFinal, dataInicio, totalFaturadoDinheiroObjetos);
+
+        indicadoresFaturadoPorMesDto.setIndicadorValorCrediarioPorMes(indicadorFaturadoPorMesCrediario);
+        indicadoresFaturadoPorMesDto.setIndicadorValorCartaoDeCreditoPorMes(indicadorFaturadoPorMesCartaoDeCredito);
+        indicadoresFaturadoPorMesDto.setIndicadorValorPorMesPixPorMes(indicadorFaturadoPorMesPix);
+        indicadoresFaturadoPorMesDto.setIndicadorValorDinheiroPorMes(indicadorFaturadoPorMesDinheiro);
+
+        painelAdministrativoDto.setIndicadoresTotalFaturadoPorMes(indicadoresFaturadoPorMesDto);
     }
 
     private void montarIndicadorVenda(PainelAdministrativoDTO painelAdministrativoDto, LocalDate dataFinal, LocalDate dataInicio, ETipoVenda tipoVenda) {
-        List<IndicadorMesDTO> indicadorVendasLista = new ArrayList<>();
 
-        List<Object[]> totalVendasObjetos;
+        IndicadoresVendasPorMesDTO indicadoresVendasPorMesDto = new IndicadoresVendasPorMesDTO();
 
-        if (Objects.nonNull(tipoVenda)) {
-            totalVendasObjetos = this.vendaRepository.contagemDeVendasPorMesComFiltro(dataInicio.toString(), dataFinal.toString(), tipoVenda.ordinal());
-        } else {
-            totalVendasObjetos = this.vendaRepository.contagemDeVendasPorMes(dataInicio.toString(), dataFinal.toString());
-        }
+        List<Object[]> totalVendasCrediarioObjetos = this.vendaRepository.contagemDeVendasPorMesComFiltro(dataInicio.toString(), dataFinal.toString(), ETipoVenda.CREDIARIO.ordinal());
+        List<IndicadorMesDTO> indicadorVendaPorMesCrediario = this.montarDtoIndicadores(dataFinal, dataInicio, totalVendasCrediarioObjetos);
 
-        List<IndicadorMesDTO> indicadorVendasListaDto = this.montarDtoIndicadores(dataFinal, dataInicio, indicadorVendasLista, totalVendasObjetos);
+        List<Object[]> totalVendasCartaoDeCreditoObjetos = this.vendaRepository.contagemDeVendasPorMesComFiltro(dataInicio.toString(), dataFinal.toString(), ETipoVenda.CARTAO_CREDITO.ordinal());
+        List<IndicadorMesDTO> indicadorVendaPorMesCartaoDeCredito = this.montarDtoIndicadores(dataFinal, dataInicio, totalVendasCartaoDeCreditoObjetos);
 
-        painelAdministrativoDto.setIndicadorVendasPorMes(indicadorVendasListaDto);
+        List<Object[]> totalVendasPixObjetos = this.vendaRepository.contagemDeVendasPorMesComFiltro(dataInicio.toString(), dataFinal.toString(), ETipoVenda.PIX.ordinal());
+        List<IndicadorMesDTO> indicadorVendaPorMesPix = this.montarDtoIndicadores(dataFinal, dataInicio, totalVendasPixObjetos);
+
+        List<Object[]> totalVendasDinheiroObjetos = this.vendaRepository.contagemDeVendasPorMesComFiltro(dataInicio.toString(), dataFinal.toString(), ETipoVenda.DINHEIRO.ordinal());
+        List<IndicadorMesDTO> indicadorVendaPorMesDinheiro = this.montarDtoIndicadores(dataFinal, dataInicio, totalVendasDinheiroObjetos);
+
+        indicadoresVendasPorMesDto.setIndicadorValorCrediarioPorMes(indicadorVendaPorMesCrediario);
+        indicadoresVendasPorMesDto.setIndicadorValorCartaoDeCreditoPorMes(indicadorVendaPorMesCartaoDeCredito);
+        indicadoresVendasPorMesDto.setIndicadorValorPorMesPixPorMes(indicadorVendaPorMesPix);
+        indicadoresVendasPorMesDto.setIndicadorValorDinheiroPorMes(indicadorVendaPorMesDinheiro);
+
+        painelAdministrativoDto.setIndicadoresVendasPorMes(indicadoresVendasPorMesDto);
     }
 
     private void montarIndicadorCliente(PainelAdministrativoDTO painelAdministrativoDto, LocalDate dataFinal, LocalDate dataInicio) {
@@ -96,12 +113,13 @@ public class PainelAdministrativoServiceImpl implements PainelAdministrativo {
 
         List<Object[]> totalVendasObjetos = this.clienteRepository.contagemDeClientesPorMes(dataInicio.toString(), dataFinal.toString());
 
-        List<IndicadorMesDTO> indicadorClientesListaDto = this.montarDtoIndicadores(dataFinal, dataInicio, indicadorVendasLista, totalVendasObjetos);
+        List<IndicadorMesDTO> indicadorClientesListaDto = this.montarDtoIndicadores(dataFinal, dataInicio, totalVendasObjetos);
 
         painelAdministrativoDto.setIndicadorClientesPorMes(indicadorClientesListaDto);
     }
 
-    private List<IndicadorMesDTO> montarDtoIndicadores(LocalDate dataFinal, LocalDate dataInicio, List<IndicadorMesDTO> indicadorLista, List<Object[]> totalClientesObjetos) {
+    private List<IndicadorMesDTO> montarDtoIndicadores(LocalDate dataFinal, LocalDate dataInicio, List<Object[]> totalClientesObjetos) {
+        List<IndicadorMesDTO> indicadorLista = new ArrayList<>();
 
         Map<Integer, Map<Integer, IndicadorMesDTO>> vendasPorMesMap = new HashMap<>();
         totalClientesObjetos.forEach(objeto -> {
@@ -149,6 +167,7 @@ public class PainelAdministrativoServiceImpl implements PainelAdministrativo {
 
         indicadorLista.sort(IndicadorMesDTO::compareTo);
         List<IndicadorMesDTO> indicadorVendasListaDto = indicadorLista.stream().distinct().collect(Collectors.toList());
+
         return indicadorVendasListaDto;
     }
 }
