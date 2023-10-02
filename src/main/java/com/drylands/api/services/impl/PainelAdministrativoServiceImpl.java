@@ -11,8 +11,9 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -43,7 +44,11 @@ public class PainelAdministrativoServiceImpl implements PainelAdministrativo {
 
     private PainelAdministrativoDTO metricasMensais(PainelAdministrativoDTO painelAdministrativoDto, LocalDate dataInicio,  LocalDate dataFinal) {
         Date inicioEmDate = Date.from(dataInicio.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
-        Date finalEmDate =  Date.from(dataFinal.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+
+        LocalTime horaFinal = LocalTime.of(23, 59, 59);
+        LocalDateTime dataHoraFinal = dataFinal.atTime(horaFinal);
+
+        Date finalEmDate =  Date.from(dataHoraFinal.atZone(ZoneId.systemDefault()).toInstant());
 
         BigInteger totalClientes = this.clienteRepository.totalDeClientes(inicioEmDate, finalEmDate);
         BigInteger totalVendasRealizadas = this.vendaRepository.totalVendasRealizadas(dataInicio, dataFinal);
@@ -114,8 +119,6 @@ public class PainelAdministrativoServiceImpl implements PainelAdministrativo {
     }
 
     private void montarIndicadorCliente(PainelAdministrativoDTO painelAdministrativoDto, LocalDate dataFinal, LocalDate dataInicio) {
-        List<IndicadorMesDTO> indicadorVendasLista = new ArrayList<>();
-
         List<Object[]> totalVendasObjetos = this.clienteRepository.contagemDeClientesPorMes(dataInicio.toString(), dataFinal.toString());
 
         List<IndicadorMesDTO> indicadorClientesListaDto = this.montarDtoIndicadores(dataFinal, dataInicio, totalVendasObjetos);
