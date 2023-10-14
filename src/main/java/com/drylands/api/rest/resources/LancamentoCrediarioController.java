@@ -25,7 +25,7 @@ public class LancamentoCrediarioController extends AbstractController {
 
     @PutMapping("/{id}")
     @Operation(tags = "Lancamento", summary = "Atualizar status lancamentos por id")
-    public ResponseEntity<LancamentoCrediarioDTO> atualizarStatusLancamentoCrediarioPorId(@PathVariable("id") Long id, LancamentoCrediarioDTO lancamentoCrediarioDTO) {
+    public ResponseEntity<LancamentoCrediarioDTO> atualizarStatusLancamentoCrediarioPorId(@PathVariable("id") Long id, @RequestBody LancamentoCrediarioDTO lancamentoCrediarioDTO) {
         return new ResponseEntity<>(mapearDTO(this.lancamentoCrediarioService.atualizarStatusLancamentoCrediarioPorId(id, lancamentoCrediarioDTO), LancamentoCrediarioDTO.class), HttpStatus.OK);
     }
 
