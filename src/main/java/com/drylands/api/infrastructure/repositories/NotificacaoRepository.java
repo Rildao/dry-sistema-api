@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
 import java.time.LocalDate;
+import java.util.List;
 
 @Repository
 public interface NotificacaoRepository extends JpaRepository<Notificacao, Long> {
@@ -38,4 +39,6 @@ public interface NotificacaoRepository extends JpaRepository<Notificacao, Long> 
             "AND n.tipo_notificacao = 0 " +
             "AND lc.data_pagamento = :dataPagamento", nativeQuery = true)
     Object findFirstByVendaIdAndTipoNotificacaoIsAtraso(@Param("id") Long id, @Param("dataPagamento") LocalDate dataPagamento);
+
+    List<Notificacao> findAllByLidoIsTrue();
 }

@@ -5,6 +5,7 @@ import com.drylands.api.rest.dtos.response.IndicadorMesDTO;
 import com.drylands.api.rest.dtos.response.RelatorioDTO;
 import com.drylands.api.services.RelatorioService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -24,6 +25,7 @@ public class RelatorioServiceImpl implements RelatorioService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<RelatorioDTO> informacoesParaRelatorio(String dataInicioStr, String dataFimStr) {
         List<RelatorioDTO> relatorioDTO = new ArrayList<>();
 
