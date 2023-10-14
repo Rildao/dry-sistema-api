@@ -7,6 +7,7 @@ import com.drylands.api.domain.enums.ETipoVenda;
 import com.drylands.api.infrastructure.exceptions.NotFoundException;
 import com.drylands.api.infrastructure.repositories.LancamentoCrediarioRepository;
 import com.drylands.api.infrastructure.repositories.VendaRepository;
+import com.drylands.api.rest.dtos.lancamento_crediario.LancamentoCrediarioDTO;
 import com.drylands.api.services.LancamentoCrediarioService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -43,31 +44,36 @@ public class LancamentoCrediarioServiceImpl implements LancamentoCrediarioServic
 
     @Override
     @Transactional
-    public LancamentoCrediario atualizarStatusLancamentoCrediarioPorId(Long id) {
+    public LancamentoCrediario atualizarStatusLancamentoCrediarioPorId(Long id, LancamentoCrediarioDTO lancamentoCrediarioDTO) {
         Optional<LancamentoCrediario> lancamentoCrediarioOptional = this.lancamentoCrediarioRepository.findById(id);
 
         if(lancamentoCrediarioOptional.isEmpty()) throw new NotFoundException("Lancamento não encontrada.");
 
         LancamentoCrediario lancamentoCrediario = lancamentoCrediarioOptional.get();
 
-        List<LancamentoCrediario> lancamentos = this.lancamentoCrediarioRepository.findAllByVendaId(lancamentoCrediario.getVenda().getId());
+        if(lancamentoCrediarioDTO.getStatusVenda().equals(EStatusVenda.PAGO)) {
+            List<LancamentoCrediario> lancamentos = this.lancamentoCrediarioRepository.findAllByVendaId(lancamentoCrediario.getVenda().getId());
 
-        Venda venda = lancamentoCrediario.getVenda();
+            Venda venda = lancamentoCrediario.getVenda();
+            lancamentoCrediario.setStatusVenda(EStatusVenda.PAGO);
 
-        boolean algumLancamentoEmAtraso = lancamentos.stream()
-                .filter(lan -> !lan.getId().equals(id))
-                .anyMatch(lancamento -> lancamento.getStatusVenda().equals(EStatusVenda.ATRASADO));
+            boolean algumLancamentoEmAtraso = lancamentos.stream()
+                    .filter(lan -> !lan.getId().equals(id))
+                    .anyMatch(lancamento -> lancamento.getStatusVenda().equals(EStatusVenda.ATRASADO));
 
-        boolean todosPago = lancamentos.stream()
-                .filter(lan -> !lan.getId().equals(id))
-                .allMatch(lancamento -> lancamento.getStatusVenda().equals(EStatusVenda.PAGO));
+            boolean todosPago = lancamentos.stream()
+                    .filter(lan -> !lan.getId().equals(id))
+                    .allMatch(lancamento -> lancamento.getStatusVenda().equals(EStatusVenda.PAGO));
 
-        if (algumLancamentoEmAtraso) {
-            venda.setStatusVenda(EStatusVenda.ATRASADO);
-            this.vendaRepository.save(venda);
-        } else if(todosPago) {
-            venda.setStatusVenda(EStatusVenda.PAGO);
-            this.vendaRepository.save(venda);
+            if (algumLancamentoEmAtraso) {
+                venda.setStatusVenda(EStatusVenda.ATRASADO);
+                this.vendaRepository.save(venda);
+            } else if(todosPago) {
+                venda.setStatusVenda(EStatusVenda.PAGO);
+                this.vendaRepository.save(venda);
+            }
+        } else {
+            lancamentoCrediario.setStatusVenda(lancamentoCrediarioDTO.getStatusVenda());
         }
 
         return this.lancamentoCrediarioRepository.save(lancamentoCrediario);
