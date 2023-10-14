@@ -50,26 +50,27 @@ public class VendasJobs {
     @Scheduled(cron = "0 0 6 * * *")
     @Transactional
     public void verificarStatusDaVenda() {
-        log.warn("JOB: verificar vendas em atraso");
+        log.warn("JOB: verificar status venda.");
 
         List<Venda> vendas = this.vendaRepository.findAllByTypeSaleCredit();
 
         vendas.forEach(venda -> {
             List<LancamentoCrediario> lancamentoCrediarios = this.lancamentoCrediarioRepository.findAllByVendaId(venda.getId());
 
-            boolean todosEmAtraso = true;
+            boolean algumLancamentoEmAtraso = lancamentoCrediarios.stream()
+                    .anyMatch(lancamento -> lancamento.getStatusVenda().equals(EStatusVenda.ATRASADO));
 
-            for (LancamentoCrediario lancamento : lancamentoCrediarios) {
-                if (!lancamento.getStatusVenda().equals(EStatusVenda.ATRASADO)) {
-                    todosEmAtraso = false;
-                    break;
-                }
-            }
+            boolean todosPago = lancamentoCrediarios.stream()
+                    .allMatch(lancamento -> lancamento.getStatusVenda().equals(EStatusVenda.PAGO));
 
-            if (todosEmAtraso) {
+            if (algumLancamentoEmAtraso) {
                 venda.setStatusVenda(EStatusVenda.ATRASADO);
                 this.vendaRepository.save(venda);
                 log.info("Status da venda {} foi alterado para atrasado.", venda);
+            }  else if (todosPago) {
+                venda.setStatusVenda(EStatusVenda.PAGO);
+                this.vendaRepository.save(venda);
+                log.info("Status da venda {} foi alterado para pago.", venda);
             }
         });
     }

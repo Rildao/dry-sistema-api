@@ -7,7 +7,6 @@ import com.drylands.api.domain.enums.ETipoVenda;
 import com.drylands.api.infrastructure.exceptions.NotFoundException;
 import com.drylands.api.infrastructure.repositories.LancamentoCrediarioRepository;
 import com.drylands.api.infrastructure.repositories.VendaRepository;
-import com.drylands.api.rest.dtos.lancamento_crediario.LancamentoCrediarioDTO;
 import com.drylands.api.services.LancamentoCrediarioService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -43,14 +42,35 @@ public class LancamentoCrediarioServiceImpl implements LancamentoCrediarioServic
     }
 
     @Override
+    @Transactional
     public LancamentoCrediario atualizarStatusLancamentoCrediarioPorId(Long id) {
-        Optional<LancamentoCrediario> lancamentoCrediario = this.lancamentoCrediarioRepository.findById(id);
+        Optional<LancamentoCrediario> lancamentoCrediarioOptional = this.lancamentoCrediarioRepository.findById(id);
 
-        if(lancamentoCrediario.isEmpty()) throw new NotFoundException("Lancamento não encontrada.");
+        if(lancamentoCrediarioOptional.isEmpty()) throw new NotFoundException("Lancamento não encontrada.");
 
-        lancamentoCrediario.get().setStatusVenda(EStatusVenda.PAGO);
+        LancamentoCrediario lancamentoCrediario = lancamentoCrediarioOptional.get();
 
-        return this.lancamentoCrediarioRepository.save(lancamentoCrediario.get());
+        List<LancamentoCrediario> lancamentos = this.lancamentoCrediarioRepository.findAllByVendaId(lancamentoCrediario.getVenda().getId());
+
+        Venda venda = lancamentoCrediario.getVenda();
+
+        boolean algumLancamentoEmAtraso = lancamentos.stream()
+                .filter(lan -> !lan.getId().equals(id))
+                .anyMatch(lancamento -> lancamento.getStatusVenda().equals(EStatusVenda.ATRASADO));
+
+        boolean todosPago = lancamentos.stream()
+                .filter(lan -> !lan.getId().equals(id))
+                .allMatch(lancamento -> lancamento.getStatusVenda().equals(EStatusVenda.PAGO));
+
+        if (algumLancamentoEmAtraso) {
+            venda.setStatusVenda(EStatusVenda.ATRASADO);
+            this.vendaRepository.save(venda);
+        } else if(todosPago) {
+            venda.setStatusVenda(EStatusVenda.PAGO);
+            this.vendaRepository.save(venda);
+        }
+
+        return this.lancamentoCrediarioRepository.save(lancamentoCrediario);
     }
 
     @Override
