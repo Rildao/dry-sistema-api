@@ -18,6 +18,7 @@ import com.drylands.api.services.ClienteService;
 import com.drylands.api.services.LancamentoCrediarioService;
 import com.drylands.api.utils.UtilidadesData;
 import com.drylands.api.utils.UtilidadesDocumentos;
+import com.drylands.api.utils.UtilidadesVendas;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -208,8 +209,8 @@ public class ClienteServiceImpl implements ClienteService {
     private void relacionarClienteVenda(ClienteVendasDTO clienteVendasDto, Cliente cliente) {
         List<Venda> vendas = new ArrayList<>();
 
-
         clienteVendasDto.getVendas().forEach(vendaDto -> {
+            UtilidadesVendas.validarVendas(vendaDto);
 
             if(Objects.nonNull(vendaDto.getId())) {
                 Venda venda = this.vendaRepository.findById(vendaDto.getId()).get();
@@ -225,6 +226,8 @@ public class ClienteServiceImpl implements ClienteService {
 
                 vendas.add(venda);
             } else {
+                UtilidadesVendas.validarVendas(vendaDto);
+
                 Venda venda = modelMapper.map(vendaDto, Venda.class);
                 UtilidadesData.configurarDatasComFusoHorarioBrasileiro(venda);
 
