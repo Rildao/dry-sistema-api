@@ -83,4 +83,17 @@ public interface VendaRepository extends JpaRepository<Venda, Long> {
             "ORDER BY EXTRACT(YEAR FROM v.data_venda), EXTRACT(MONTH FROM v.data_venda)",
             nativeQuery = true)
     List<Object[]> somatorioDeVendasPorMes(@Param("dataInicio") String dataInicio, @Param("dataFinal") String dataFinal);
+
+    @Query(value = "SELECT EXTRACT(YEAR FROM v.data_venda) AS ano, " +
+            "EXTRACT(MONTH FROM v.data_venda) AS mes, " +
+            "COUNT(*) AS total_vendas, " +
+            "SUM(v.valor_venda) AS total_vendas " +
+            "FROM venda v " +
+            "WHERE v.data_venda BETWEEN TO_DATE(:dataInicio, 'YYYY-MM-DD') " +
+            "AND TO_DATE(:dataFinal, 'YYYY-MM-DD') " +
+            "GROUP BY EXTRACT(YEAR FROM v.data_venda), EXTRACT(MONTH FROM v.data_venda) " +
+            "ORDER BY EXTRACT(YEAR FROM v.data_venda), EXTRACT(MONTH FROM v.data_venda)",
+            nativeQuery = true)
+    List<Object[]> somatorioParaRelatorio(@Param("dataInicio") String dataInicio,
+                                                   @Param("dataFinal") String dataFinal);
 }
