@@ -11,6 +11,7 @@ import com.drylands.api.rest.dtos.venda.VendaDTO;
 import com.drylands.api.services.LancamentoCrediarioService;
 import com.drylands.api.services.VendaService;
 import com.drylands.api.utils.UtilidadesData;
+import com.drylands.api.utils.UtilidadesVendas;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -41,6 +42,8 @@ public class VendaServiceImpl implements VendaService {
     @Transactional
     public Venda criarVenda(VendaDTO vendaDto) {
 
+        UtilidadesVendas.validarVendas(vendaDto);
+
         if (ETipoVenda.PIX.equals(vendaDto.getTipoVenda()) || ETipoVenda.CARTAO_CREDITO.equals(vendaDto.getTipoVenda()) || ETipoVenda.DINHEIRO.equals(vendaDto.getTipoVenda())) {
             vendaDto.setStatusVenda(EStatusVenda.PAGO.toString());
         } else {
@@ -61,6 +64,8 @@ public class VendaServiceImpl implements VendaService {
     @Override
     @Transactional
     public Venda atualizarVenda(Long id, VendaDTO vendaDto) {
+
+        UtilidadesVendas.validarVendas(vendaDto);
 
         this.pegarVendaPorId(id);
 

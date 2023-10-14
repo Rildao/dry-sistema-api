@@ -29,7 +29,7 @@ public class Venda extends EntidadeAbstrata {
     @Column(name = "quantidade_parcelas")
     private float quantidadeParcelas;
 
-    @Column(name = "valor_venda")
+    @Column(name = "valor_venda", nullable = false)
     private float valorVenda;
 
     @Column(name = "status_venda", nullable = false)
