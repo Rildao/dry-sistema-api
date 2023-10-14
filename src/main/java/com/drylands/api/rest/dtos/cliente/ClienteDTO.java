@@ -11,7 +11,7 @@ import java.util.Date;
 public class ClienteDTO {
     private String id;
 
-    @NotBlank(message = "Nome do cliente não pode ser vazio!")
+    @NotBlank(message = "O nome do cliente não pode estar em branco.")
     private String nome;
 
     private String cpf;
