@@ -100,4 +100,17 @@ public class NotificacaoJobs {
             }
         });
     }
+
+    @Scheduled(cron = "0 0 0 * * 0")
+    @Transactional
+    public void apagarNotificacoesLidas() {
+        log.warn("JOB: apagar notificaçoes lidas ");
+
+        List<Notificacao> notificacaos = this.notificacaoRepository.findAllByLidoIsTrue();
+
+        notificacaos.forEach(notificacao ->  {
+            this.notificacaoRepository.delete(notificacao);
+            log.warn("JOB: notificação de alerta {} criada com sucesso. ", notificacao);
+        });
+    }
 }
