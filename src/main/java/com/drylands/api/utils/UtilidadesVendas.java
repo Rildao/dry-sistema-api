@@ -10,15 +10,19 @@ import java.util.Objects;
 public class UtilidadesVendas {
     public static void validarVendas(VendaDTO vendaDto) {
 
-        if(Objects.isNull(vendaDto.getValorVenda()) || Objects.equals(vendaDto.getValorVenda(), 0)) throw new BadRequestException("Valor da venda não pode estar zerado");
+        if(Objects.isNull(vendaDto.getValorVenda()) || vendaDto.getValorVenda() == 0.0) throw new BadRequestException("Valor da venda não pode estar zerado");
 
-        if(vendaDto.getTipoVenda().equals(ETipoVenda.CREDIARIO) && (Objects.isNull(vendaDto.getQuantidadeParcelas()) || Objects.equals(vendaDto.getQuantidadeParcelas(), 0))) throw new BadRequestException("Digite a quantidade de parcelas da compra no crediário.");
+        if(vendaDto.getTipoVenda().equals(ETipoVenda.CREDIARIO) && (Objects.isNull(vendaDto.getQuantidadeParcelas()) || vendaDto.getQuantidadeParcelas() == 0.0 )) throw new BadRequestException("Digite a quantidade de parcelas da compra no crediário.");
+
+        if(Objects.isNull(vendaDto.getDataVenda())) throw new BadRequestException("Digite a data da venda");
     }
 
     public static void validarVendas(VendaSimplificadoDTO vendaDto) {
 
-        if(Objects.isNull(vendaDto.getValorVenda()) || Objects.equals(vendaDto.getValorVenda(), 0)) throw new BadRequestException("Valor da venda não pode estar zerado");
+        if(Objects.isNull(vendaDto.getValorVenda()) || vendaDto.getValorVenda() == 0.0) throw new BadRequestException("Valor da venda não pode estar zerado");
 
-        if(vendaDto.getTipoVenda().equals(ETipoVenda.CREDIARIO) && (Objects.isNull(vendaDto.getQuantidadeParcelas()) || Objects.equals(vendaDto.getQuantidadeParcelas(), 0))) throw new BadRequestException("Digite a quantidade de parcelas da compra no crediário.");
+        if(vendaDto.getTipoVenda().equals(ETipoVenda.CREDIARIO) && (Objects.isNull(vendaDto.getQuantidadeParcelas()) || vendaDto.getQuantidadeParcelas() == 0.0 )) throw new BadRequestException("Digite a quantidade de parcelas da compra no crediário.");
+
+        if(Objects.isNull(vendaDto.getDataVenda())) throw new BadRequestException("Digite a data da venda");
     }
 }
