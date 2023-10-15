@@ -81,7 +81,7 @@ public class LancamentoCrediarioServiceImpl implements LancamentoCrediarioServic
 
     @Override
     public List<LancamentoCrediario> pegarLancamentosPorVendaId(Long id) {
-        return this.lancamentoCrediarioRepository.findAllByVendaId(id);
+        return this.lancamentoCrediarioRepository.findAllByVendaIdOrderByDataPagamentoDesc(id);
     }
 
     @Override
