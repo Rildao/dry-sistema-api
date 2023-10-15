@@ -11,6 +11,8 @@ import java.util.List;
 public interface LancamentoCrediarioRepository extends JpaRepository<LancamentoCrediario, Long> {
     List<LancamentoCrediario> findAllByVendaId(Long vendaId);
 
+    List<LancamentoCrediario> findAllByVendaIdOrderByDataPagamentoDesc(Long vendaId);
+
     @Query("SELECT l FROM LancamentoCrediario l WHERE l.statusVenda = ATRASADO")
     List<LancamentoCrediario> listarLancamentosEmAtraso();
 

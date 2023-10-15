@@ -51,7 +51,7 @@ public class LancamentoCrediarioServiceImpl implements LancamentoCrediarioServic
 
         LancamentoCrediario lancamentoCrediario = lancamentoCrediarioOptional.get();
 
-        if(lancamentoCrediarioDTO.getStatusVenda().equals(EStatusVenda.PAGO)) {
+         if(lancamentoCrediarioDTO.getStatusVenda().equals(EStatusVenda.PAGO)) {
             List<LancamentoCrediario> lancamentos = this.lancamentoCrediarioRepository.findAllByVendaId(lancamentoCrediario.getVenda().getId());
 
             Venda venda = lancamentoCrediario.getVenda();
@@ -81,7 +81,7 @@ public class LancamentoCrediarioServiceImpl implements LancamentoCrediarioServic
 
     @Override
     public List<LancamentoCrediario> pegarLancamentosPorVendaId(Long id) {
-        return this.lancamentoCrediarioRepository.findAllByVendaId(id);
+        return this.lancamentoCrediarioRepository.findAllByVendaIdOrderByDataPagamentoDesc(id);
     }
 
     @Override
