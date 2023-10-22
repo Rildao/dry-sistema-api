@@ -1,5 +1,6 @@
 package com.drylands.api.rest.resources;
 
+import com.drylands.api.domain.enums.ETipoVenda;
 import com.drylands.api.rest.dtos.response.PainelAdministrativoDTO;
 import com.drylands.api.services.PainelAdministrativo;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,7 +22,7 @@ public class PainelAdministrativoController extends AbstractController {
 
     @GetMapping()
     @Operation(tags = "PainelAdministrativo", summary = "Pegar Informações Dashboard")
-    public ResponseEntity<PainelAdministrativoDTO> informacoesPainelAdministrativo () {
-        return new ResponseEntity<>(this.painelAdministrativo.informacoesPainelAdministrativo(), HttpStatus.OK);
+    public ResponseEntity<PainelAdministrativoDTO> informacoesPainelAdministrativo (@RequestParam(value = "tipoVenda", required = false) ETipoVenda tipoVenda) {
+        return new ResponseEntity<>(this.painelAdministrativo.informacoesPainelAdministrativo(tipoVenda), HttpStatus.OK);
     }
 }

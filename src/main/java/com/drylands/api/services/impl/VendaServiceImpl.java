@@ -2,13 +2,16 @@ package com.drylands.api.services.impl;
 
 import com.drylands.api.domain.Venda;
 import com.drylands.api.domain.enums.EStatusVenda;
+import com.drylands.api.domain.enums.ETipoVenda;
 import com.drylands.api.infrastructure.exceptions.NotFoundException;
 import com.drylands.api.infrastructure.repositories.VendaRepository;
 import com.drylands.api.rest.dtos.venda.ListagemVendaDTO;
+import com.drylands.api.rest.dtos.venda.VendaCsvDTO;
 import com.drylands.api.rest.dtos.venda.VendaDTO;
 import com.drylands.api.services.LancamentoCrediarioService;
 import com.drylands.api.services.VendaService;
 import com.drylands.api.utils.UtilidadesData;
+import com.drylands.api.utils.UtilidadesVendas;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class VendaServiceImpl implements VendaService {
@@ -38,10 +42,16 @@ public class VendaServiceImpl implements VendaService {
     @Transactional
     public Venda criarVenda(VendaDTO vendaDto) {
 
+        UtilidadesVendas.validarVendas(vendaDto);
+
+        if (ETipoVenda.PIX.equals(vendaDto.getTipoVenda()) || ETipoVenda.CARTAO_CREDITO.equals(vendaDto.getTipoVenda()) || ETipoVenda.DINHEIRO.equals(vendaDto.getTipoVenda())) {
+            vendaDto.setStatusVenda(EStatusVenda.PAGO.toString());
+        } else {
+            vendaDto.setStatusVenda(EStatusVenda.ANDAMENTO.toString());
+        }
+
         Venda novaVenda = modelMapper.map(vendaDto, Venda.class);
 
-        vendaDto.setStatusVenda(EStatusVenda.ANDAMENTO);
-        
         novaVenda = this.vendaRepository.save(novaVenda);
 
         this.lancamentoCrediarioService.gerandoLancamentosParaCrediario(novaVenda);
@@ -54,6 +64,8 @@ public class VendaServiceImpl implements VendaService {
     @Override
     @Transactional
     public Venda atualizarVenda(Long id, VendaDTO vendaDto) {
+
+        UtilidadesVendas.validarVendas(vendaDto);
 
         this.pegarVendaPorId(id);
 
@@ -91,11 +103,16 @@ public class VendaServiceImpl implements VendaService {
         return listagemVendaPage;
     }
 
+    @Override
+    public List<VendaCsvDTO> listarVendasSemPaginacao() {
+        return this.vendaRepository.findAll().stream().map(venda -> modelMapper.map(venda, VendaCsvDTO.class)).collect(Collectors.toList());
+    }
+
     public ListagemVendaDTO listarTodasAsVendas(ListagemVendaDTO ListagemVendaPage,
                                                 List<VendaDTO> listaDeVendas,
                                                 Pageable pageable) {
 
-        Page<Venda> page = this.vendaRepository.findAll(pageable);
+        Page<Venda> page = this.vendaRepository.findAllByOrderByDataVendaDesc(pageable);
 
         page.getContent().forEach(venda -> {
             VendaDTO vendaDto = modelMapper.map(venda, VendaDTO.class);

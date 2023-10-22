@@ -9,6 +9,7 @@ import com.drylands.api.infrastructure.exceptions.BadRequestException;
 import com.drylands.api.infrastructure.exceptions.NotFoundException;
 import com.drylands.api.infrastructure.repositories.ClienteRepository;
 import com.drylands.api.infrastructure.repositories.VendaRepository;
+import com.drylands.api.rest.dtos.cliente.ClienteCsvDTO;
 import com.drylands.api.rest.dtos.cliente.ClienteDTO;
 import com.drylands.api.rest.dtos.cliente.ClienteVendasDTO;
 import com.drylands.api.rest.dtos.cliente.ListagemClienteDTO;
@@ -17,6 +18,7 @@ import com.drylands.api.services.ClienteService;
 import com.drylands.api.services.LancamentoCrediarioService;
 import com.drylands.api.utils.UtilidadesData;
 import com.drylands.api.utils.UtilidadesDocumentos;
+import com.drylands.api.utils.UtilidadesVendas;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ClienteServiceImpl implements ClienteService {
@@ -157,6 +160,11 @@ public class ClienteServiceImpl implements ClienteService {
     }
 
     @Override
+    public List<ClienteCsvDTO> listarClientesSemPaginacao() {
+        return this.clienteRepository.findAll().stream().map(cliente -> modelMapper.map(cliente, ClienteCsvDTO.class)).collect(Collectors.toList());
+    }
+
+    @Override
     @Transactional
     public void deletarCliente(Long id) {
         this.pegarClientePorId(id);
@@ -201,13 +209,13 @@ public class ClienteServiceImpl implements ClienteService {
     private void relacionarClienteVenda(ClienteVendasDTO clienteVendasDto, Cliente cliente) {
         List<Venda> vendas = new ArrayList<>();
 
-
         clienteVendasDto.getVendas().forEach(vendaDto -> {
+            UtilidadesVendas.validarVendas(vendaDto);
 
             if(Objects.nonNull(vendaDto.getId())) {
                 Venda venda = this.vendaRepository.findById(vendaDto.getId()).get();
                 venda.setValorVenda(vendaDto.getValorVenda());
-                venda.setStatusVenda(vendaDto.getStatusVenda());
+                venda.setStatusVenda(EStatusVenda.valueOf(vendaDto.getStatusVenda()));
                 venda.setDiaVencimentoLancamento(vendaDto.getDiaVencimentoLancamento());
                 venda.setTipoVenda(vendaDto.getTipoVenda());
                 venda.setQuantidadeParcelas(vendaDto.getQuantidadeParcelas());
@@ -218,9 +226,16 @@ public class ClienteServiceImpl implements ClienteService {
 
                 vendas.add(venda);
             } else {
+                UtilidadesVendas.validarVendas(vendaDto);
+
                 Venda venda = modelMapper.map(vendaDto, Venda.class);
                 UtilidadesData.configurarDatasComFusoHorarioBrasileiro(venda);
-                if (Objects.equals(vendaDto.getTipoVenda(), ETipoVenda.CREDIARIO)) vendaDto.setStatusVenda(EStatusVenda.ANDAMENTO);
+
+                if (ETipoVenda.PIX.equals(vendaDto.getTipoVenda()) || ETipoVenda.CARTAO_CREDITO.equals(vendaDto.getTipoVenda()) || ETipoVenda.DINHEIRO.equals(vendaDto.getTipoVenda())) {
+                    vendaDto.setStatusVenda(EStatusVenda.PAGO.toString());
+                } else {
+                    vendaDto.setStatusVenda(EStatusVenda.ANDAMENTO.toString());
+                }
 
                 venda.setCliente(cliente);
                 vendas.add(venda);

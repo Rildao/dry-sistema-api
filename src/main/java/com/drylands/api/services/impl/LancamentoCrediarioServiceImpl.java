@@ -43,19 +43,45 @@ public class LancamentoCrediarioServiceImpl implements LancamentoCrediarioServic
     }
 
     @Override
-    public LancamentoCrediario atualizarStatusLancamentoCrediarioPorId(Long id) {
-        Optional<LancamentoCrediario> lancamentoCrediario = this.lancamentoCrediarioRepository.findById(id);
+    @Transactional
+    public LancamentoCrediario atualizarStatusLancamentoCrediarioPorId(Long id, LancamentoCrediarioDTO lancamentoCrediarioDTO) {
+        Optional<LancamentoCrediario> lancamentoCrediarioOptional = this.lancamentoCrediarioRepository.findById(id);
 
-        if(lancamentoCrediario.isEmpty()) throw new NotFoundException("Lancamento não encontrada.");
+        if(lancamentoCrediarioOptional.isEmpty()) throw new NotFoundException("Lancamento não encontrada.");
 
-        lancamentoCrediario.get().setStatusVenda(EStatusVenda.PAGO);
+        LancamentoCrediario lancamentoCrediario = lancamentoCrediarioOptional.get();
 
-        return this.lancamentoCrediarioRepository.save(lancamentoCrediario.get());
+        if(lancamentoCrediarioDTO.getStatusVenda().equals(EStatusVenda.PAGO)) {
+            List<LancamentoCrediario> lancamentos = this.lancamentoCrediarioRepository.findAllByVendaId(lancamentoCrediario.getVenda().getId());
+
+            Venda venda = lancamentoCrediario.getVenda();
+            lancamentoCrediario.setStatusVenda(EStatusVenda.PAGO);
+
+            boolean algumLancamentoEmAtraso = lancamentos.stream()
+                    .filter(lan -> !lan.getId().equals(id))
+                    .anyMatch(lancamento -> lancamento.getStatusVenda().equals(EStatusVenda.ATRASADO));
+
+            boolean todosPago = lancamentos.stream()
+                    .filter(lan -> !lan.getId().equals(id))
+                    .allMatch(lancamento -> lancamento.getStatusVenda().equals(EStatusVenda.PAGO));
+
+            if (algumLancamentoEmAtraso) {
+                venda.setStatusVenda(EStatusVenda.ATRASADO);
+                this.vendaRepository.save(venda);
+            } else if(todosPago) {
+                venda.setStatusVenda(EStatusVenda.PAGO);
+                this.vendaRepository.save(venda);
+            }
+        } else {
+            lancamentoCrediario.setStatusVenda(lancamentoCrediarioDTO.getStatusVenda());
+        }
+
+        return this.lancamentoCrediarioRepository.save(lancamentoCrediario);
     }
 
     @Override
     public List<LancamentoCrediario> pegarLancamentosPorVendaId(Long id) {
-        return this.lancamentoCrediarioRepository.findAllByVendaId(id);
+        return this.lancamentoCrediarioRepository.findAllByVendaIdOrderByDataPagamentoDesc(id);
     }
 
     @Override
