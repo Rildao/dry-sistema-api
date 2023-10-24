@@ -31,7 +31,7 @@ public class SwaggerConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .servers(Arrays.asList(
-                        new Server().url("https://dry-modas-spring-api-production.up.railway.app").description("homolog Server"),
+                        new Server().url("https://dry-sistema-api-production.up.railway.app").description("homolog Server"),
                         new Server().url("http://localhost:8080").description("local Server")
                 ));
     }
